@@ -146,9 +146,16 @@ html,body{background:#0A0A0A}
 .mla .support{text-align:center;margin-top:18px;font-size:13.5px;color:var(--gray-500)}
 .mla .support a{color:var(--or);font-weight:600}
 
-/* ===== FOOTER ===== */
-.mla .foot{text-align:center;margin-top:46px;font-size:12.5px;color:rgba(255,255,255,.28)}
-.mla .foot .logo{font-size:16px;margin-bottom:8px;display:inline-block}
+/* ===== FOOTER (repris à l'identique de la page produit) ===== */
+.mla .footer{margin-top:50px;padding-top:40px;border-top:1px solid rgba(255,255,255,.08)}
+.mla .footer-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:32px;margin-bottom:32px}
+.mla .footer-logo{font-size:20px;font-weight:900;color:#fff;letter-spacing:-.03em}
+.mla .footer-logo em{color:var(--or);font-style:normal}
+.mla .footer-desc{font-size:13px;color:rgba(255,255,255,.4);margin-top:8px;max-width:300px;line-height:1.65}
+.mla .footer-links{display:flex;gap:22px;flex-wrap:wrap;align-items:center}
+.mla .footer-links a{color:rgba(255,255,255,.5);font-size:13.5px;transition:color var(--t)}
+.mla .footer-links a:hover{color:#fff}
+.mla .footer-btm{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;padding-top:22px;border-top:1px solid rgba(255,255,255,.07);font-size:12.5px;color:rgba(255,255,255,.3)}
 
 /* ===== REVEAL (comme le site) — visible par défaut, animé seulement si JS actif ===== */
 .mla .r{transition:opacity .6s ease,transform .6s ease}
@@ -162,6 +169,7 @@ html,body{background:#0A0A0A}
   .mla .ulist{grid-template-columns:1fr}
   .mla .dl{width:100%;padding:20px 28px;font-size:17px}
   .mla .wrap{padding:0 18px}
+  .mla .footer-top{flex-direction:column;gap:18px}
 }
 @media(prefers-reduced-motion:reduce){
   .mla .dl::after,.mla .badge .ring{animation:none}
@@ -264,11 +272,25 @@ html,body{background:#0A0A0A}
         <a href="mailto:contact@mlacademy.fr">contact@mlacademy.fr</a> — réponse en moins de 24h.</p>
     </section>
 
-    <!-- FOOTER -->
-    <div class="foot">
-      <div class="logo">ML <em style="color:var(--or);font-style:normal">ACADEMY</em></div>
-      <div>© 2024 ML Academy — Fait pour les revendeurs ambitieux 🔥</div>
-    </div>
+    <!-- FOOTER (identique à la page produit — liens légaux toujours accessibles) -->
+    <footer class="footer">
+      <div class="footer-top">
+        <div>
+          <div class="footer-logo">ML <em>ACADEMY</em></div>
+          <p class="footer-desc">L'accompagnement pour apprendre à gagner de l'argent en important depuis la Chine et en revendant en France.</p>
+        </div>
+        <div class="footer-links">
+          <a href="/pages/contact">Contact</a>
+          <a href="/pages/mentions-legales">Mentions légales</a>
+          <a href="/pages/cgv">CGV</a>
+          <a href="/pages/confidentialite">Confidentialité</a>
+        </div>
+      </div>
+      <div class="footer-btm">
+        <span>© 2026 ML Academy. Tous droits réservés.</span>
+        <span>Fait pour les revendeurs ambitieux 🔥</span>
+      </div>
+    </footer>
 
   </div>
 </div>
