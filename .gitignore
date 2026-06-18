@@ -1,0 +1,4 @@
+# Outils de prévisualisation (navigateur headless, captures) — non versionnés
+.preview/
+node_modules/
+*.log

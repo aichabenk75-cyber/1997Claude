@@ -1,0 +1,45 @@
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  ML ACADEMY — BLOC À COLLER SUR LA PAGE POST-PAIEMENT DE SHOPIFY
+  ════════════════════════════════════════════════════════════════════════════
+  Où ? Admin Shopify → Réglages → Paiement (Checkout) → section
+       « Page de statut de la commande » → champ « Scripts supplémentaires ».
+  Effet : affiche une bannière de félicitations + un bouton qui envoie le client
+          vers ta belle page  /pages/felicitations  (créée via le template Liquid).
+
+  👉 Si l'URL de ta page n'est pas /pages/felicitations, modifie le href ci-dessous.
+  ════════════════════════════════════════════════════════════════════════════
+-->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  #mla-os{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#0A0A0A;
+    border-radius:16px;padding:34px 30px;text-align:center;color:#fff;margin:0 0 26px;
+    position:relative;overflow:hidden;border:1px solid rgba(249,115,22,.25)}
+  #mla-os::before{content:'';position:absolute;top:-160px;left:50%;transform:translateX(-50%);
+    width:600px;height:420px;background:radial-gradient(ellipse,rgba(249,115,22,.18),transparent 65%)}
+  #mla-os .in{position:relative;z-index:1}
+  #mla-os .em{font-size:42px;line-height:1;margin-bottom:12px}
+  #mla-os .pill{display:inline-flex;align-items:center;gap:7px;background:rgba(34,197,94,.12);
+    color:#4ADE80;border:1px solid rgba(34,197,94,.35);padding:6px 15px;border-radius:100px;
+    font-size:12px;font-weight:700;margin-bottom:14px}
+  #mla-os h2{font-size:25px;font-weight:900;letter-spacing:-.03em;margin:0 0 8px}
+  #mla-os h2 b{color:#F97316}
+  #mla-os p{font-size:14.5px;color:#9CA3AF;max-width:420px;margin:0 auto 22px;line-height:1.65}
+  #mla-os a.btn{display:inline-flex;align-items:center;gap:9px;background:#F97316;color:#fff;
+    font-weight:800;font-size:16px;padding:17px 38px;border-radius:12px;text-decoration:none;
+    box-shadow:0 8px 30px rgba(249,115,22,.45);transition:.2s}
+  #mla-os a.btn:hover{background:#EA580C;transform:translateY(-2px)}
+  #mla-os .note{font-size:12.5px;color:#6B7280;margin-top:14px}
+</style>
+
+<div id="mla-os">
+  <div class="in">
+    <div class="em">🎉</div>
+    <span class="pill">● Paiement confirmé</span>
+    <h2>Bienvenue dans <b>le Lab</b> !</h2>
+    <p>Ton accès est débloqué. Clique ci-dessous pour accéder à ton espace et télécharger ton pack immédiatement.</p>
+    <!-- 👇 Vérifie/modifie l'URL de ta page de félicitations -->
+    <a class="btn" href="/pages/felicitations">⬇ Accéder à mon espace &amp; télécharger →</a>
+    <div class="note">Le lien de téléchargement t'a aussi été envoyé par email.</div>
+  </div>
+</div>
