@@ -149,7 +149,8 @@ html,body{background:#0A0A0A}
 .mla .support a{color:var(--or);font-weight:600}
 
 /* ===== FOOTER (repris à l'identique de la page produit) ===== */
-.mla .footer{margin-top:50px;padding-top:40px;border-top:1px solid rgba(255,255,255,.08)}
+.mla .footer{position:relative;z-index:2;margin-top:50px;padding:40px 24px 6px;border-top:1px solid rgba(255,255,255,.08)}
+.mla .footer-inner{max-width:1100px;margin:0 auto}
 .mla .footer-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:32px;margin-bottom:32px}
 .mla .footer-logo{font-size:20px;font-weight:900;color:#fff;letter-spacing:-.03em}
 .mla .footer-logo em{color:var(--or);font-style:normal}
@@ -274,8 +275,11 @@ html,body{background:#0A0A0A}
         <a href="mailto:contact@mlacademy.fr">contact@mlacademy.fr</a> — réponse en moins de 24h.</p>
     </section>
 
-    <!-- FOOTER (identique à la page produit — liens légaux toujours accessibles) -->
-    <footer class="footer">
+  </div><!-- /.wrap -->
+
+  <!-- FOOTER (pleine largeur — identique à la page produit ; liens légaux toujours accessibles) -->
+  <footer class="footer">
+    <div class="footer-inner">
       <div class="footer-top">
         <div>
           <div class="footer-logo">ML <em>ACADEMY</em></div>
@@ -292,9 +296,8 @@ html,body{background:#0A0A0A}
         <span>© 2026 ML Academy. Tous droits réservés.</span>
         <span>Fait pour les revendeurs ambitieux 🔥</span>
       </div>
-    </footer>
-
-  </div>
+    </div>
+  </footer>
 </div>
 
 <script>
