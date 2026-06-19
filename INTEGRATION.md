@@ -4,6 +4,40 @@ Page de confirmation moderne affichée après la validation du paiement, dans l'
 exact du site (fond sombre `#0A0A0A`, accent orange `#F97316`, police Inter, halo + confettis,
 coche animée et **gros bouton Télécharger**).
 
+---
+
+## 🆕 MISE À JOUR — Page « Félicitation » v2 (3 accès)
+
+La page **Félicitation** de la boutique (`/pages/felicitation`) a été refondue avec **3 sections
+d'accès distinctes** correspondant aux 3 promesses du Pack : **Discord VIP**, **Pack 1000
+Fournisseurs (PDF)** et **Bonus Vinted (PDF)**. Logos Discord & Vinted en **SVG inline** (officiels,
+aucune dépendance CDN).
+
+| Fichier | À quoi ça sert |
+|---|---|
+| **`test-felicitation.html`** | Page v2 complète, autonome → **aperçu** (ouvre dans un navigateur) + source de référence. |
+| **`felicitations-page-content.html`** | **Contenu exact** poussé dans Shopify (sans `<!DOCTYPE>/<html>/<head>/<body>`). |
+
+**Méthode d'intégration utilisée : « contenu de page » (sans toucher au thème).**
+1. Le **contenu** de la page existante **Félicitation** (rubrique *Boutique en ligne → Pages*) a été
+   remplacé par `felicitations-page-content.html` (via l'API Admin). Le thème **MoneyLab** n'est pas modifié :
+   l'en-tête / le pied du thème restent autour de la page, qui s'affiche en pleine largeur (full‑bleed `.mla`).
+2. **Liens footer mappés aux vrais handles** de la boutique :
+   `/pages/contact` · `/pages/mentions-legales` · `/pages/conditions-generales-de-vente` · `/pages/politique-de-confidentialite`.
+3. **Lien Discord** configuré : `https://discord.gg/aUXVt2kesJ`.
+
+### ⏳ Reste à faire : brancher les 2 PDF
+Dans la page (éditeur `< >`), remplace les placeholders :
+- `[LIEN_PDF_FOURNISSEURS]` → URL du PDF « 1000 Fournisseurs »
+- `[LIEN_PDF_VINTED]` → URL du PDF « TOP 10 Vinted »
+
+> 💡 Pour que l'attribut `download` **force** réellement le téléchargement, héberge les PDF sur le
+> **même domaine** (*Contenus → Fichiers* Shopify → URL `cdn.shopify.com/...`). Sur un lien externe
+> (Google Drive…), le navigateur ouvre le fichier au lieu de le télécharger. Tant qu'un placeholder
+> n'est pas remplacé, un garde-fou JS prévient au clic.
+
+---
+
 ## 📁 Fichiers fournis
 
 | Fichier | À quoi ça sert |
