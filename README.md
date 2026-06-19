@@ -9,8 +9,10 @@ animée) avec un **gros bouton Télécharger**.
 
 | Fichier | Rôle |
 |---|---|
-| [`felicitations.html`](./felicitations.html) | Page complète autonome — **aperçu** (à ouvrir dans un navigateur) + source. |
-| [`page.felicitations.liquid`](./page.felicitations.liquid) | **Template Shopify recommandé** (page autonome `{% layout none %}`). |
+| [`test-felicitation.html`](./test-felicitation.html) | 🆕 **Page v2 (3 accès : Discord · Fournisseurs · Vinted)** — aperçu autonome + source. |
+| [`felicitations-page-content.html`](./felicitations-page-content.html) | 🆕 Contenu v2 **poussé dans la page Shopify** « Félicitation » (sans `<html>/<head>/<body>`). |
+| [`felicitations.html`](./felicitations.html) | Page v1 autonome — **aperçu** (à ouvrir dans un navigateur) + source. |
+| [`page.felicitations.liquid`](./page.felicitations.liquid) | Template Shopify v1 (page autonome `{% layout none %}`). |
 | [`order-status-additional-scripts.html`](./order-status-additional-scripts.html) | Bannière + bouton pour la page de statut de commande (juste après paiement). |
 | [`INTEGRATION.md`](./INTEGRATION.md) | **Guide d'intégration Shopify pas à pas** (FR). |
 
