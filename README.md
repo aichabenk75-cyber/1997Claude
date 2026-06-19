@@ -12,6 +12,8 @@ animée) avec un **gros bouton Télécharger**.
 | [`felicitations.html`](./felicitations.html) | Page complète autonome — **aperçu** (à ouvrir dans un navigateur) + source. |
 | [`page.felicitations.liquid`](./page.felicitations.liquid) | **Template Shopify recommandé** (page autonome `{% layout none %}`). |
 | [`order-status-additional-scripts.html`](./order-status-additional-scripts.html) | Bannière + bouton pour la page de statut de commande (juste après paiement). |
+| [`contact.html`](./contact.html) | **Page Contact** autonome — aperçu + source (formulaire en maquette statique). |
+| [`page.contact.liquid`](./page.contact.liquid) | **Template Shopify de la page Contact** : formulaire **natif** `{% form 'contact' %}` (succès + erreurs gérés). |
 | [`INTEGRATION.md`](./INTEGRATION.md) | **Guide d'intégration Shopify pas à pas** (FR). |
 
 ## Démarrage rapide

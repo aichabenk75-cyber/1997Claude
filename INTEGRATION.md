@@ -98,3 +98,58 @@ Si tu préfères ne pas créer de template :
 | Liste « accès débloqué » | bloc `<ul class="ulist">` |
 
 Tout est responsive (mobile/desktop) et respecte `prefers-reduced-motion`.
+
+---
+
+## 📨 Page Contact (`contact.html` + `page.contact.liquid`)
+
+Même esprit visuel que la page Félicitations (fond `#0A0A0A`, halo orange, Inter,
+logo + footer pleine largeur), avec **uniquement un formulaire de contact** qui
+utilise le **formulaire natif Shopify** : à l'envoi, un email part vers l'adresse
+du compte de la boutique (**Réglages → Détails de la boutique → E-mail du
+propriétaire**).
+
+### Mise en ligne (méthode template, recommandée)
+
+1. **Admin Shopify → Boutique en ligne → Thèmes → ⋯ → Modifier le code.**
+2. **Templates → Ajouter un template** → type **`page`** → nom **`contact`**.
+   Shopify crée `templates/page.contact.liquid`.
+3. **Supprime tout** le contenu généré et **colle l'intégralité de
+   `page.contact.liquid`** fourni. Sauvegarde.
+4. **Boutique en ligne → Pages → Ajouter une page.**
+   - Titre : `Contact`
+   - **Modèle de thème** : choisis **`page.contact`**.
+   - Enregistre.
+5. Ta page est en ligne : **`/pages/contact`** 📨 (c'est déjà le lien du footer).
+
+### Ce que gère le template
+
+| Cas | Comportement |
+|---|---|
+| Champs | `contact[name]` *(requis)*, `contact[email]` *(requis)*, `contact[phone]` *(optionnel)*, `contact[body]` *(message)* + un `contact[subject]` masqué pour repérer la source dans ta boîte mail. |
+| Envoi réussi | `{% if form.posted_successfully? %}` → bandeau vert **« Message envoyé ! 🎉 »** (Shopify recharge la page avec `?contact_posted=true`). |
+| Erreurs | `{% if form.errors %}` → bandeau rouge listant les champs en erreur (libellés FR via `form.errors.translated_fields`). |
+
+> ⚠️ **À ne pas envelopper dans `{% raw %}`** : la page contient du Liquid actif.
+> Le CSS/JS ont été écrits **sans aucune séquence `{{` ni `{%`** pour cohabiter
+> sans conflit avec Liquid (seul le corps HTML contient des balises Liquid).
+
+### Réception des messages
+
+Les messages arrivent par email sur l'adresse du propriétaire de la boutique.
+Pour changer la destination : **Réglages → Notifications** (ou l'e-mail du
+propriétaire dans **Détails de la boutique**). Pense à vérifier les spams lors
+d'un premier test.
+
+### Personnalisation rapide
+
+| Élément | Où le changer |
+|---|---|
+| Email affiché en secours | `mailto:contact@mlacademy.fr` (bloc `.alt`) |
+| Textes (titre, sous-titre, libellés) | directement dans le HTML |
+| Couleur d'accent | variable `--or` dans le `<style>` |
+
+> Alternative sans template : crée une page `Contact`, ouvre **`< >`** et colle le
+> `<body>` de `contact.html` — mais ce fichier est une **maquette d'aperçu** (le
+> formulaire n'envoie rien). Pour un formulaire fonctionnel, utilise la méthode
+> template avec `page.contact.liquid`.

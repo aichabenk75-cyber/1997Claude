@@ -1,0 +1,370 @@
+{% layout none %}
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  ML ACADEMY - PAGE CONTACT (template Shopify autonome)
+  ============================================================================
+  Rendu plein ecran (layout none), dans l'esprit du site : fond sombre #0A0A0A,
+  accent orange #F97316, police Inter, halo orange + motif de points.
+
+  Cette page contient du Liquid ACTIF : elle branche le formulaire NATIF Shopify
+  (tag  form 'contact' ) qui envoie un email au compte de la boutique, et gere
+  le message de succes ainsi que l'affichage des erreurs.
+
+  IMPORTANT : ne PAS envelopper dans raw. Le CSS/JS ne contiennent donc aucune
+  sequence d'ouverture Liquid. Voir INTEGRATION.md pour la mise en ligne.
+  ============================================================================
+-->
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Contact — ML Academy</title>
+<meta name="description" content="Une question ? Écris à l'équipe ML Academy, on te répond en moins de 24h."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+/* ===== TOKENS — repris à l'identique du site ML Academy ===== */
+.mla,.mla *,.mla *::before,.mla *::after{box-sizing:border-box;margin:0;padding:0}
+.mla{
+  --black:#0A0A0A;--white:#fff;
+  --gray-400:#9CA3AF;--gray-500:#6B7280;--gray-700:#374151;
+  --or:#F97316;--or-dark:#EA580C;--or-light:#FED7AA;
+  --green:#16A34A;--green-l:#22C55E;--green-bg:#DCFCE7;
+  --red:#EF4444;--amber:#F59E0B;
+  --radius:12px;--radius-sm:8px;--radius-lg:16px;--radius-full:100px;
+  --t:.2s ease;
+  --f:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+}
+/* full-bleed : la page remplit l'écran même si Shopify l'insère dans un conteneur */
+.mla{
+  position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;width:100vw;
+  min-height:100vh;display:flex;flex-direction:column;background:var(--black);color:var(--white);
+  font-family:var(--f);line-height:1.6;-webkit-font-smoothing:antialiased;
+  overflow:hidden;padding:0 0 0
+}
+/* fond standalone + reset des marges par défaut du navigateur (sinon un liseré sombre apparaît au-dessus de l'en-tête blanc) */
+html,body{margin:0;padding:0;background:#0A0A0A}
+.mla a{color:inherit;text-decoration:none}
+.mla .wrap{max-width:600px;margin:0 auto;padding:0 24px;position:relative;z-index:2;width:100%}
+
+/* halo orange + motif de points (comme .hero / .cta-final du site) */
+.mla::before{content:'';position:absolute;top:-260px;left:50%;transform:translateX(-50%);
+  width:1100px;height:820px;background:radial-gradient(ellipse,rgba(249,115,22,.16) 0%,transparent 65%);
+  pointer-events:none;z-index:0}
+.mla::after{content:'';position:absolute;inset:0;
+  background-image:radial-gradient(rgba(249,115,22,.05) 1px,transparent 1px);background-size:30px 30px;
+  pointer-events:none;z-index:0}
+
+/* ===== EN-TÊTE / NAV (barre blanche — reprise de la page d'accueil) ===== */
+.mla .hd{position:relative;z-index:3;background:rgba(255,255,255,.94);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid #E5E7EB}
+.mla .hd-in{max-width:1200px;margin:0 auto;padding:0 24px;height:66px;
+  display:flex;align-items:center;justify-content:space-between;gap:24px}
+.mla .logo{font-size:21px;font-weight:900;letter-spacing:-.03em;color:#0A0A0A;white-space:nowrap}
+.mla .logo em{color:var(--or);font-style:normal}
+.mla .nav-links{display:flex;gap:32px;align-items:center}
+.mla .nav-links a{font-size:14px;font-weight:500;color:#6B7280;transition:color var(--t);white-space:nowrap}
+.mla .nav-links a:hover{color:#0A0A0A}
+.mla .nav-cta{display:inline-flex;align-items:center;gap:8px;background:var(--or);color:#fff;
+  font-size:14px;font-weight:700;padding:10px 20px;border-radius:var(--radius-sm);line-height:1;white-space:nowrap;
+  transition:background var(--t),transform var(--t),box-shadow var(--t)}
+.mla .nav-cta:hover{background:var(--or-dark);transform:translateY(-1px);box-shadow:0 4px 16px rgba(249,115,22,.4)}
+
+/* ===== HERO ===== */
+.mla .hero{text-align:center;padding:24px 0 26px}
+
+/* icône enveloppe (même esprit que la coche de la page félicitations) */
+.mla .hicon{position:relative;width:92px;height:92px;margin:0 auto 26px}
+.mla .hicon .ring{position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle,rgba(249,115,22,.35),transparent 70%);
+  animation:pulse 2.6s ease-out infinite}
+.mla .hicon .disc{position:absolute;inset:12px;border-radius:50%;
+  background:linear-gradient(145deg,#F97316,#F59E0B);
+  box-shadow:0 14px 38px rgba(249,115,22,.5),inset 0 2px 6px rgba(255,255,255,.35);
+  display:flex;align-items:center;justify-content:center;
+  animation:pop .55s cubic-bezier(.2,1.5,.4,1) both}
+.mla .hicon svg{width:38px;height:38px}
+@keyframes pop{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes pulse{0%{transform:scale(.85);opacity:.9}70%{transform:scale(1.3);opacity:0}100%{opacity:0}}
+
+.mla .pill{display:inline-flex;align-items:center;gap:8px;background:rgba(22,163,74,.12);
+  color:#4ADE80;border:1px solid rgba(34,197,94,.35);padding:8px 18px;border-radius:var(--radius-full);
+  font-size:13px;font-weight:700;margin-bottom:20px}
+.mla .pill .dot{width:8px;height:8px;border-radius:50%;background:#22C55E;
+  box-shadow:0 0 0 0 rgba(34,197,94,.6);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.7)}}
+
+.mla h1{font-size:clamp(28px,5vw,46px);font-weight:900;letter-spacing:-.04em;line-height:1.1;
+  margin-bottom:16px}
+.mla h1 .hl{color:var(--or)}
+.mla .sub{font-size:clamp(15px,2vw,17px);color:var(--gray-400);max-width:480px;margin:0 auto;
+  line-height:1.7}
+
+/* ===== CARTE FORMULAIRE ===== */
+.mla .card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius-lg);padding:30px 30px 28px}
+
+.mla .field{margin-bottom:18px}
+.mla .row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.mla label{display:block;font-size:14px;font-weight:600;color:#E5E7EB;margin-bottom:8px}
+.mla label .req{color:var(--or)}
+.mla label .opt{color:var(--gray-500);font-weight:500}
+.mla input,.mla textarea{width:100%;font-family:var(--f);font-size:15px;color:#fff;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);
+  padding:14px 16px;transition:border-color var(--t),box-shadow var(--t),background var(--t);outline:none}
+.mla input::placeholder,.mla textarea::placeholder{color:var(--gray-500)}
+.mla input:hover,.mla textarea:hover{border-color:rgba(255,255,255,.2)}
+.mla input:focus,.mla textarea:focus{border-color:var(--or);background:rgba(249,115,22,.06);
+  box-shadow:0 0 0 3px rgba(249,115,22,.15)}
+.mla textarea{min-height:140px;resize:vertical;line-height:1.6}
+
+/* bouton orange .btn-or */
+.mla .btn-or{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;
+  gap:10px;width:100%;background:var(--or);color:#fff;font-weight:800;font-size:17px;
+  padding:18px 28px;border:none;border-radius:14px;cursor:pointer;font-family:var(--f);line-height:1;
+  box-shadow:0 8px 30px rgba(249,115,22,.45);transition:background var(--t),transform var(--t),box-shadow var(--t)}
+.mla .btn-or:hover{background:var(--or-dark);transform:translateY(-2px);box-shadow:0 12px 38px rgba(249,115,22,.55)}
+.mla .btn-or:active{transform:translateY(0)}
+.mla .btn-or.loading{opacity:.85;pointer-events:none}
+.mla .btn-or svg{width:20px;height:20px}
+/* reflet qui balaye (comme le bouton télécharger) */
+.mla .btn-or::after{content:'';position:absolute;top:0;left:-120%;width:55%;height:100%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,.35),transparent);
+  transform:skewX(-20deg);animation:shine 3.4s ease-in-out infinite}
+@keyframes shine{0%,62%{left:-120%}82%,100%{left:170%}}
+
+.mla .fineprint{font-size:12.5px;color:var(--gray-500);text-align:center;margin-top:14px;line-height:1.55}
+
+/* ===== MESSAGES SUCCÈS / ERREUR (rendus par Liquid) ===== */
+.mla .ok{display:flex;gap:14px;align-items:flex-start;background:rgba(22,163,74,.1);
+  border:1px solid rgba(34,197,94,.4);border-radius:var(--radius);padding:18px 20px;margin-bottom:24px}
+.mla .ok-ic{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(34,197,94,.2);
+  color:#4ADE80;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}
+.mla .ok strong{display:block;color:#86EFAC;font-size:15.5px;margin-bottom:3px}
+.mla .ok p{color:#BBF7D0;font-size:14px;line-height:1.55}
+.mla .err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.4);
+  border-radius:var(--radius);padding:16px 20px;margin-bottom:24px}
+.mla .err strong{display:block;color:#FCA5A5;font-size:15px;margin-bottom:8px}
+.mla .err ul{list-style:none;display:flex;flex-direction:column;gap:5px}
+.mla .err li{color:#FECACA;font-size:14px;padding-left:16px;position:relative}
+.mla .err li::before{content:'•';position:absolute;left:3px;color:#EF4444}
+
+/* ===== TRUST + ALT ===== */
+.mla .trust{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-top:26px}
+.mla .trust-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray-400)}
+.mla .alt{text-align:center;margin-top:18px;font-size:13.5px;color:var(--gray-500)}
+.mla .alt a{color:var(--or);font-weight:600}
+.mla .alt a:hover{color:var(--or-light)}
+
+/* ===== FOOTER (repris à l'identique de la page produit) ===== */
+.mla .footer{position:relative;z-index:2;margin-top:auto;padding:46px 24px 6px;border-top:1px solid rgba(255,255,255,.08)}
+.mla .footer-inner{max-width:1200px;margin:0 auto}
+.mla .footer-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:32px;margin-bottom:32px}
+.mla .footer-logo{font-size:20px;font-weight:900;color:#fff;letter-spacing:-.03em}
+.mla .footer-logo em{color:var(--or);font-style:normal}
+.mla .footer-desc{font-size:13px;color:rgba(255,255,255,.4);margin-top:8px;max-width:300px;line-height:1.65}
+.mla .footer-links{display:flex;gap:22px;flex-wrap:wrap;align-items:center}
+.mla .footer-links a{color:rgba(255,255,255,.5);font-size:13.5px;transition:color var(--t)}
+.mla .footer-links a:hover{color:#fff}
+.mla .footer-btm{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;padding-top:22px;border-top:1px solid rgba(255,255,255,.07);font-size:12.5px;color:rgba(255,255,255,.3)}
+
+/* ===== REVEAL (comme le site) — visible par défaut, animé seulement si JS actif ===== */
+.mla .r{transition:opacity .6s ease,transform .6s ease}
+.mla.anim .r{opacity:0;transform:translateY(22px)}
+.mla.anim .r.in{opacity:1;transform:translateY(0)}
+.mla .d1{transition-delay:.1s}.mla .d2{transition-delay:.2s}.mla .d3{transition-delay:.3s}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .mla .nav-links{display:none}/* logo (→ accueil) + bouton CTA suffisent sur mobile */
+}
+@media(max-width:680px){
+  .mla .row{grid-template-columns:1fr;gap:0}
+  .mla .card{padding:24px 20px 22px}
+  .mla .wrap{padding:0 18px}
+  .mla .trust{gap:14px 22px}
+  .mla .hd-in{padding:0 18px}
+  .mla .footer-top{flex-direction:column;gap:18px}
+}
+@media(prefers-reduced-motion:reduce){
+  .mla .btn-or::after,.mla .hicon .ring{animation:none}
+  .mla .hicon .disc{animation-duration:.01s}
+  .mla .r{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div class="mla">
+
+  <!-- EN-TÊTE : barre blanche reprise de la page d'accueil (logo + nav + CTA) -->
+  <header class="hd">
+    <div class="hd-in">
+      <a href="/" class="logo" aria-label="ML Academy — accueil">ML <em>ACADEMY</em></a>
+      <nav class="nav-links">
+        <a href="/#methode">La méthode</a>
+        <a href="/#offre">Notre offre</a>
+        <a href="/#avis">Avis</a>
+        <a href="/#faq">FAQ</a>
+      </nav>
+      <a href="/#offre" class="nav-cta">Rejoindre le Lab →</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hicon">
+        <span class="ring"></span>
+        <span class="disc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="14" rx="2"/>
+            <path d="m3 7 9 6 9-6"/>
+          </svg>
+        </span>
+      </div>
+
+      <div class="pill r"><span class="dot"></span> On te répond en moins de 24h</div>
+      <h1 class="r d1">Une question ?<br><span class="hl">Écris-nous</span> 👋</h1>
+      <p class="sub r d2">Un doute avant de te lancer, un souci avec ton accès ou juste envie d'en
+        savoir plus ? Remplis le formulaire, l'équipe te répond vite ⚡</p>
+    </section>
+
+    <!-- FORMULAIRE (natif Shopify) -->
+    <section class="card-wrap r d2">
+
+      {% form 'contact', class: 'card' %}
+
+        {% if form.posted_successfully? %}
+          <div class="ok">
+            <span class="ok-ic">✓</span>
+            <div>
+              <strong>Message envoyé ! 🎉</strong>
+              <p>Merci, on a bien reçu ton message. L'équipe te répond en moins de 24h par email.</p>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if form.errors %}
+          <div class="err">
+            <strong>⚠️ Ton message n'a pas pu être envoyé :</strong>
+            <ul>
+              {% for field in form.errors %}
+                {% if field == 'form' %}
+                  <li>{{ form.errors.messages[field] }}</li>
+                {% else %}
+                  <li>{{ form.errors.translated_fields[field] | capitalize }} : {{ form.errors.messages[field] }}</li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <input type="hidden" name="contact[subject]" value="Nouveau message — Page Contact ML Academy"/>
+
+        <div class="row">
+          <div class="field">
+            <label for="c-name">Ton prénom <span class="req">*</span></label>
+            <input id="c-name" name="contact[name]" type="text" autocomplete="given-name"
+                   placeholder="Comment tu t'appelles ?" required/>
+          </div>
+          <div class="field">
+            <label for="c-email">Ton email <span class="req">*</span></label>
+            <input id="c-email" name="contact[email]" type="email" autocomplete="email"
+                   placeholder="prenom@email.com" required/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="c-phone">Téléphone <span class="opt">(optionnel)</span></label>
+          <input id="c-phone" name="contact[phone]" type="tel" autocomplete="tel"
+                 placeholder="06 12 34 56 78"/>
+        </div>
+
+        <div class="field">
+          <label for="c-body">Ton message <span class="req">*</span></label>
+          <textarea id="c-body" name="contact[body]" placeholder="Pose ta question, on t'aide 👇" required></textarea>
+        </div>
+
+        <button class="btn-or" type="submit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/>
+          </svg>
+          <span class="btn-tx">Envoyer le message</span>
+        </button>
+
+        <p class="fineprint">En envoyant, tu acceptes d'être recontacté par email. Zéro spam, promis 🤝</p>
+
+      {% endform %}
+
+      <!-- TRUST -->
+      <div class="trust r d3">
+        <div class="trust-item">🔒 Tes infos restent privées</div>
+        <div class="trust-item">⚡ Réponse en moins de 24h</div>
+        <div class="trust-item">📞 SAV français 7j/7</div>
+      </div>
+      <p class="alt r d3">Tu préfères l'email&nbsp;? Écris directement à
+        <a href="mailto:contact@mlacademy.fr">contact@mlacademy.fr</a></p>
+
+    </section>
+
+  </div><!-- /.wrap -->
+
+  <!-- FOOTER (pleine largeur — identique aux autres pages ; liens légaux toujours accessibles) -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-logo">ML <em>ACADEMY</em></div>
+          <p class="footer-desc">L'accompagnement pour apprendre à gagner de l'argent en important depuis la Chine et en revendant en France.</p>
+        </div>
+        <div class="footer-links">
+          <a href="/pages/contact">Contact</a>
+          <a href="/pages/mentions-legales">Mentions légales</a>
+          <a href="/pages/cgv">CGV</a>
+          <a href="/pages/confidentialite">Confidentialité</a>
+        </div>
+      </div>
+      <div class="footer-btm">
+        <span>© 2026 ML Academy. Tous droits réservés.</span>
+        <span>Fait pour les revendeurs ambitieux 🔥</span>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var root=document.querySelector('.mla');
+
+  /* ----- Reveal au scroll (identique au site) — progressif & sûr -----
+     Le contenu est visible par défaut ; on ne le cache pour l'animer que si
+     IntersectionObserver est dispo, avec un filet de sécurité qui révèle tout. */
+  if('IntersectionObserver' in window){
+    root.classList.add('anim');
+    var obs=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting)e.target.classList.add('in');});
+    },{threshold:.12});
+    root.querySelectorAll('.r').forEach(function(el){obs.observe(el);});
+    /* révèle immédiatement ce qui est déjà à l'écran */
+    requestAnimationFrame(function(){root.querySelectorAll('.r').forEach(function(el){
+      if(el.getBoundingClientRect().top<window.innerHeight)el.classList.add('in');});});
+    /* filet de sécurité : rien ne reste jamais invisible */
+    setTimeout(function(){root.querySelectorAll('.r').forEach(function(el){el.classList.add('in');});},2600);
+  }
+
+  /* ----- Feedback à l'envoi (anti double-clic) ----- */
+  var form=root.querySelector('form'),btn=root.querySelector('.btn-or');
+  if(form&&btn){
+    form.addEventListener('submit',function(){
+      btn.classList.add('loading');
+      var tx=btn.querySelector('.btn-tx');if(tx)tx.textContent='Envoi en cours…';
+    });
+  }
+})();
+</script>
+</body>
+</html>
