@@ -57,19 +57,20 @@ html,body{background:#0A0A0A}
   background-image:radial-gradient(rgba(249,115,22,.05) 1px,transparent 1px);background-size:30px 30px;
   pointer-events:none;z-index:0}
 
-/* ===== EN-TÊTE / NAV (permet de repartir vers l'accueil) ===== */
-.mla .hd{position:relative;z-index:3;border-bottom:1px solid rgba(255,255,255,.08)}
-.mla .hd-in{max-width:1100px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;
-  justify-content:space-between;gap:16px}
-.mla .logo{font-size:21px;font-weight:900;letter-spacing:-.03em;color:#fff}
+/* ===== EN-TÊTE / NAV (barre blanche — reprise de la page d'accueil) ===== */
+.mla .hd{position:relative;z-index:3;background:rgba(255,255,255,.94);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid #E5E7EB}
+.mla .hd-in{max-width:1200px;margin:0 auto;padding:0 24px;height:66px;
+  display:flex;align-items:center;justify-content:space-between;gap:24px}
+.mla .logo{font-size:21px;font-weight:900;letter-spacing:-.03em;color:#0A0A0A;white-space:nowrap}
 .mla .logo em{color:var(--or);font-style:normal}
-.mla .nav{display:flex;align-items:center;gap:22px}
-.mla .nav-link{font-size:14px;font-weight:600;color:rgba(255,255,255,.65);transition:color var(--t);white-space:nowrap}
-.mla .nav-link:hover{color:#fff}
-.mla .nav-cta{display:inline-flex;align-items:center;gap:6px;background:var(--or);color:#fff;
-  font-size:13.5px;font-weight:800;padding:10px 18px;border-radius:var(--radius-full);line-height:1;
-  box-shadow:0 6px 20px rgba(249,115,22,.4);transition:background var(--t),transform var(--t),box-shadow var(--t);white-space:nowrap}
-.mla .nav-cta:hover{background:var(--or-dark);transform:translateY(-2px);box-shadow:0 10px 26px rgba(249,115,22,.5)}
+.mla .nav-links{display:flex;gap:32px;align-items:center}
+.mla .nav-links a{font-size:14px;font-weight:500;color:#6B7280;transition:color var(--t);white-space:nowrap}
+.mla .nav-links a:hover{color:#0A0A0A}
+.mla .nav-cta{display:inline-flex;align-items:center;gap:8px;background:var(--or);color:#fff;
+  font-size:14px;font-weight:700;padding:10px 20px;border-radius:var(--radius-sm);line-height:1;white-space:nowrap;
+  transition:background var(--t),transform var(--t),box-shadow var(--t)}
+.mla .nav-cta:hover{background:var(--or-dark);transform:translateY(-1px);box-shadow:0 4px 16px rgba(249,115,22,.4)}
 
 /* ===== HERO ===== */
 .mla .hero{text-align:center;padding:24px 0 26px}
@@ -159,7 +160,7 @@ html,body{background:#0A0A0A}
 
 /* ===== FOOTER (repris à l'identique de la page produit) ===== */
 .mla .footer{position:relative;z-index:2;margin-top:auto;padding:46px 24px 6px;border-top:1px solid rgba(255,255,255,.08)}
-.mla .footer-inner{max-width:1100px;margin:0 auto}
+.mla .footer-inner{max-width:1200px;margin:0 auto}
 .mla .footer-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:32px;margin-bottom:32px}
 .mla .footer-logo{font-size:20px;font-weight:900;color:#fff;letter-spacing:-.03em}
 .mla .footer-logo em{color:var(--or);font-style:normal}
@@ -176,18 +177,16 @@ html,body{background:#0A0A0A}
 .mla .d1{transition-delay:.1s}.mla .d2{transition-delay:.2s}.mla .d3{transition-delay:.3s}
 
 /* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .mla .nav-links{display:none}/* logo (→ accueil) + bouton CTA suffisent sur mobile */
+}
 @media(max-width:680px){
   .mla .row{grid-template-columns:1fr;gap:0}
   .mla .card{padding:24px 20px 22px}
   .mla .wrap{padding:0 18px}
   .mla .trust{gap:14px 22px}
-  .mla .hd-in{padding:14px 18px}
-  .mla .nav{gap:16px}
-  .mla .nav-cta{padding:9px 15px;font-size:13px}
+  .mla .hd-in{padding:0 18px}
   .mla .footer-top{flex-direction:column;gap:18px}
-}
-@media(max-width:460px){
-  .mla .nav-link{display:none}/* le logo reste cliquable vers l'accueil */
 }
 @media(prefers-reduced-motion:reduce){
   .mla .btn-or::after,.mla .hicon .ring{animation:none}
@@ -200,15 +199,17 @@ html,body{background:#0A0A0A}
 
 <div class="mla">
 
-  <!-- EN-TÊTE : logo + retour accueil + CTA (la page ne reste pas isolée) -->
+  <!-- EN-TÊTE : barre blanche reprise de la page d'accueil (logo + nav + CTA) -->
   <header class="hd">
     <div class="hd-in">
       <a href="/" class="logo" aria-label="ML Academy — accueil">ML <em>ACADEMY</em></a>
-      <nav class="nav">
-        <a href="/" class="nav-link">← Accueil</a>
-        <!-- 👉 Lien de l'offre : laisse « / » (accueil) ou mets l'URL de ta page produit -->
-        <a href="/" class="nav-cta">Rejoindre le Lab 🔥</a>
+      <nav class="nav-links">
+        <a href="/#methode">La méthode</a>
+        <a href="/#offre">Notre offre</a>
+        <a href="/#avis">Avis</a>
+        <a href="/#faq">FAQ</a>
       </nav>
+      <a href="/#offre" class="nav-cta">Rejoindre le Lab →</a>
     </div>
   </header>
 
