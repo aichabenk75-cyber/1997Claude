@@ -230,8 +230,14 @@ html,body{background:#F6F7F4}
 .pv .plan .price{display:flex;align-items:baseline;gap:8px;margin:18px 0 2px}
 .pv .plan .price .now{font-family:var(--fd);font-size:48px;font-weight:600;color:var(--ink);line-height:1}
 .pv .plan .price .was{font-size:17px;color:var(--faint);text-decoration:line-through}
-.pv .plan .perm{font-size:13px;color:var(--muted);margin-bottom:4px}
-.pv .plan .save{font-family:var(--fm);font-size:12px;color:var(--coral-deep);font-weight:500;min-height:18px}
+.pv .plan .meta{margin:4px 0 12px}
+.pv .plan .perkit{font-family:var(--fm);font-size:13.5px;color:var(--ink);font-weight:500;display:block}
+.pv .plan .perweek{font-size:12.5px;color:var(--muted);display:block;margin-top:2px}
+.pv .plan .save{align-self:flex-start;display:inline-block;font-family:var(--fm);font-size:12px;color:var(--coral-deep);font-weight:500;background:var(--coral-bg);padding:5px 12px;border-radius:100px}
+.pv .plan .save:empty{display:none}
+.pv .plan .pop.val{background:var(--teal-deep);box-shadow:0 8px 20px -6px rgba(11,124,114,.55)}
+.pv .plan .micro{font-family:var(--fm);font-size:11.5px;color:var(--faint);text-align:center;margin-top:11px}
+.pv .launch-pill{display:table;margin:-26px auto 32px;font-family:var(--fm);font-size:12px;letter-spacing:.06em;color:var(--coral-deep);background:var(--coral-bg);padding:7px 16px;border-radius:100px}
 .pv .plan ul{list-style:none;margin:22px 0;display:grid;gap:13px}
 .pv .plan ul li{display:flex;gap:11px;font-size:14.5px;color:var(--ink-2)}
 .pv .plan ul .ck{color:var(--teal-deep);flex-shrink:0}.pv .plan ul .ck svg{width:17px;height:17px}
@@ -479,18 +485,18 @@ html,body{background:#F6F7F4}
   <section class="sec product">
     <div class="wrap">
       <div class="grid">
-        <div class="visual r"><span class="tag">FIG.01 — LE PEPTIDE</span><div class="vial" aria-hidden="true"></div></div>
+        <div class="visual r"><span class="tag">FIG.01 — KIT 10 MG</span><div class="vial" aria-hidden="true"></div></div>
         <div class="copy r d1">
           <span class="eyebrow">Le produit</span>
-          <h2>Une molécule.<br>Une précision <span class="serif-i gr">chirurgicale.</span></h2>
-          <p class="lead">Un seul peptide, dosé avec exactitude, produit selon des standards de qualité élevés. Pas de cocktail flou : une formule, vérifiable.</p>
-          <!-- ⚠️ PLACEHOLDER : confirmer nom du peptide + spécifications réelles -->
+          <h2>Un kit. Un dosage.<br>Une précision <span class="serif-i gr">chirurgicale.</span></h2>
+          <p class="lead">Un kit de 10&nbsp;mg, dosé avec exactitude, pour environ un mois de cure à raison d'une prise par semaine. Pas de cocktail flou : une formule, vérifiable.</p>
+          <!-- ⚠️ PLACEHOLDER : pureté/identité = exemples à remplacer par les valeurs de TON certificat d'analyse réel -->
           <ul class="spec-list">
-            <li><span>Peptide</span><b>[ NOM À CONFIRMER ]</b></li>
-            <li><span>Pureté (HPLC)</span><b class="ok">99,4%</b></li>
+            <li><span>Format</span><b>Kit 10 mg</b></li>
+            <li><span>Durée</span><b>≈ 1 mois · 1 prise / semaine</b></li>
+            <li><span>Pureté (HPLC)</span><b class="ok">99,4%*</b></li>
             <li><span>Identité (MS)</span><b class="ok">Confirmée</b></li>
             <li><span>Conservation</span><b>Chaîne du froid 2–8°C</b></li>
-            <li><span>Posologie</span><b>1 prise / semaine</b></li>
           </ul>
         </div>
       </div>
@@ -544,39 +550,53 @@ html,body{background:#F6F7F4}
   <!-- PRIX -->
   <section class="sec pricing" id="prix">
     <div class="wrap">
-      <div class="sec-hd r"><span class="eyebrow" style="justify-content:center">Choisis ta cure</span><h2>Un produit. Trois durées.</h2><p class="lead">Le même peptide, la même pureté. Plus la cure est longue, plus le tarif baisse.</p></div>
-      <!-- ⚠️ PLACEHOLDER : prix, quantités et économies réels à confirmer -->
+      <div class="sec-hd r"><span class="eyebrow" style="justify-content:center">Choisis ta transformation</span><h2>Plus tu t'engages,<br><span class="serif-i gr">moins tu paies.</span></h2><p class="lead">1 kit = 10&nbsp;mg, soit ≈ 1 mois de cure (1 prise / semaine). Le prix au kit baisse jusqu'à <b>−33%</b>.</p></div>
+      <p class="launch-pill r d1">✦ Tarifs de lancement 2026</p>
+      <!-- Architecture d'offre petit/moyen/grand : ancrage (prix au kit), effet de compromis (pack 3 mis en avant), meilleure valeur (pack 5). Perks (bilan/suivi/livraison) à confirmer côté boutique. -->
       <div class="price-grid">
+        <!-- TIER 1 — ancre : le prix au kit le plus élevé, valorise les packs -->
         <div class="plan r">
-          <div class="ref">Découverte</div><h3>Cure 1 mois</h3><p class="desc">Pour initialiser le protocole.</p>
-          <div class="price"><span class="now">—€</span></div><p class="perm">soit —€ / semaine</p><div class="save">&nbsp;</div>
+          <div class="ref">Découverte</div><h3>1 kit</h3><p class="desc">10&nbsp;mg · ≈ 1 mois. Pour tester le protocole.</p>
+          <div class="price"><span class="now">149€</span></div>
+          <div class="meta"><span class="perkit">149€ / kit</span><span class="perweek">≈ 37€ / semaine</span></div>
+          <div class="save"></div>
           <ul>
-            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>4 prises (1 mois)</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>1 kit de 10&nbsp;mg (≈ 1 mois)</li>
             <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Certificat d'analyse inclus</li>
             <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Livraison discrète</li>
           </ul>
-          <a href="#" class="btn btn-ghost">Choisir cette cure</a>
+          <a href="#" class="btn btn-ghost">Choisir ce kit</a>
+          <p class="micro">Paiement unique · sans abonnement</p>
         </div>
-        <div class="plan best r d1"><span class="pop">★ Le plus choisi</span>
-          <div class="ref">Équilibre</div><h3>Cure 3 mois</h3><p class="desc">Le meilleur rapport durée / résultat.</p>
-          <div class="price"><span class="now">—€</span><span class="was">—€</span></div><p class="perm">soit —€ / semaine</p><div class="save">Économise −XX%</div>
+        <!-- TIER 2 — POPULAIRE : effet de compromis + récit "résultats à 3 mois" -->
+        <div class="plan best r d1"><span class="pop">★ Le plus populaire</span>
+          <div class="ref">Transformation</div><h3>3 kits</h3><p class="desc">≈ 3 mois — la durée conseillée pour des résultats visibles.</p>
+          <div class="price"><span class="now">349€</span><span class="was">447€</span></div>
+          <div class="meta"><span class="perkit">116€ / kit</span><span class="perweek">≈ 29€ / semaine</span></div>
+          <div class="save">Tu économises 98€ · −22%</div>
           <ul>
-            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>12 prises (3 mois)</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>3 kits de 10&nbsp;mg (≈ 3 mois)</li>
             <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Bilan personnalisé offert</li>
             <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Suivi prioritaire</li>
             <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Livraison offerte</li>
           </ul>
           <a href="#" class="btn btn-coral">Démarrer ma cure</a>
+          <p class="micro">Paiement unique · sans abonnement</p>
         </div>
-        <div class="plan r d2">
-          <div class="ref">Engagement</div><h3>Cure 6 mois</h3><p class="desc">Le tarif le plus avantageux.</p>
-          <div class="price"><span class="now">—€</span><span class="was">—€</span></div><p class="perm">soit —€ / semaine</p><div class="save">Économise −XX%</div>
+        <!-- TIER 3 — MEILLEURE VALEUR : meilleure économie absolue + prix/kit plancher -->
+        <div class="plan r d2"><span class="pop val">Meilleure valeur · −33%</span>
+          <div class="ref">Évolution</div><h3>5 kits</h3><p class="desc">≈ 5 mois — le prix au kit le plus bas, pour aller au bout.</p>
+          <div class="price"><span class="now">499€</span><span class="was">745€</span></div>
+          <div class="meta"><span class="perkit">99,80€ / kit</span><span class="perweek">moins de 25€ / semaine</span></div>
+          <div class="save">Tu économises 246€ · −33%</div>
           <ul>
-            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>24 prises (6 mois)</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>5 kits de 10&nbsp;mg (≈ 5 mois)</li>
             <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Bilan + suivi prioritaire</li>
             <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Livraison express offerte</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Prix au kit le plus bas</li>
           </ul>
-          <a href="#" class="btn btn-ghost">Choisir cette cure</a>
+          <a href="#" class="btn btn-dark">Choisir ce pack</a>
+          <p class="micro">Paiement unique · sans abonnement</p>
         </div>
       </div>
       <div class="guarantee r">
@@ -592,7 +612,7 @@ html,body{background:#F6F7F4}
       <div class="sec-hd r"><span class="eyebrow" style="justify-content:center">FAQ</span><h2>Tes questions, nos réponses</h2></div>
       <!-- ⚠️ PLACEHOLDER : réponses à faire valider juridiquement (sujet réglementé) -->
       <div class="acc r d1">
-        <div class="item open"><button class="q">Comment fonctionne la cure ? <span class="ic"></span></button><div class="a"><p>Une prise par semaine, sur la durée que tu choisis (1, 3 ou 6 mois). Le protocole est volontairement simple pour être tenu sans effort, même avec un emploi du temps chargé.</p></div></div>
+        <div class="item open"><button class="q">Comment fonctionne la cure ? <span class="ic"></span></button><div class="a"><p>Une prise par semaine. Tu choisis le nombre de kits — 1, 3 ou 5 (soit ≈ 1, 3 ou 5 mois de cure). Le protocole est volontairement simple pour être tenu sans effort, même avec un emploi du temps chargé.</p></div></div>
         <div class="item"><button class="q">Le bilan gratuit, c'est quoi ? <span class="ic"></span></button><div class="a"><p>Un court questionnaire (2 min) pour comprendre ton profil et vérifier que la cure te convient. Gratuit, sans engagement — il oriente le choix de la durée.</p></div></div>
         <div class="item"><button class="q">Vos produits sont-ils testés ? <span class="ic"></span></button><div class="a"><p>Oui. Chaque lot dispose d'un certificat d'analyse (pureté, identité) émis par un laboratoire tiers indépendant, rattaché au numéro de lot de ton flacon. [À compléter avec ta politique officielle.]</p></div></div>
         <div class="item"><button class="q">Y a-t-il un effet yo-yo ? <span class="ic"></span></button><div class="a"><p>L'objectif de la cure est une perte progressive et durable, à l'inverse des régimes restrictifs. [Formulation à valider — aucune garantie de résultat ne peut être promise.]</p></div></div>
@@ -642,7 +662,7 @@ html,body{background:#F6F7F4}
   <!-- STICKY CTA -->
   <div class="scta" id="scta">
     <div class="in">
-      <div class="txt"><b>Prêt à t'alléger ?</b><small>Bilan gratuit en 2 min · Satisfait ou remboursé 60 jours</small></div>
+      <div class="txt"><b>Prêt à t'alléger ?</b><small>Cure dès 149€ · jusqu'à −33% en pack · satisfait ou remboursé 60 j</small></div>
       <div style="display:flex;align-items:center;gap:8px">
         <a href="#prix" class="btn btn-coral">Démarrer ma cure</a>
         <button class="x" id="sctaX" aria-label="Fermer">×</button>
