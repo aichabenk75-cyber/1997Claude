@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  PEPT'VOLUTION — HOME (esthétique "Terminal Industries")
+  ════════════════════════════════════════════════════════════════════════════
+  • Direction : OS métabolique de précision. Fond quasi-noir, VERT (repris du site
+    d'origine) + BLANC, typographie grotesque + monospace technique, grilles,
+    crosshairs aux angles, HUD, molécule 3D présentée comme un instrument annoté.
+  • Motion fluide (GSAP/IO) + WebGL (Three.js) avec fallbacks — zéro bug.
+  • Offre : 1 peptide, 3 cures (quantités).
+
+  ⚠️ PLACEHOLDER à confirmer : prix/quantités réels, nom exact du peptide,
+     vrais témoignages, textes légaux. Aucune fausse preuve inventée.
+  ════════════════════════════════════════════════════════════════════════════
+-->
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PEPT'VOLUTION — Une séquence. Une cure. Une évolution.</title>
+<meta name="description" content="La cure peptide repensée comme un protocole de précision. 1 prise par semaine, pureté vérifiée en laboratoire, traçabilité totale."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════ TOKENS (scopés sous .pv) ═══════════════ */
+.pv,.pv *,.pv *::before,.pv *::after{box-sizing:border-box;margin:0;padding:0}
+.pv{
+  --bg:#070A09;--panel:#0C100E;--panel-2:#111714;--panel-3:#161E1A;
+  --green:#10B981;--green-2:#34D399;--green-3:#22C55E;--green-deep:#064E3B;
+  --white:#F3F6F5;--muted:#8B968F;--muted-2:#5E6A63;
+  --line:rgba(255,255,255,.10);--line-2:rgba(255,255,255,.06);--line-g:rgba(16,185,129,.32);
+  --glass:rgba(255,255,255,.025);--glass-2:rgba(255,255,255,.05);
+  --r:14px;--r-lg:18px;--r-full:100px;--t:.3s cubic-bezier(.4,0,.2,1);
+  --fd:'Space Grotesk',-apple-system,BlinkMacSystemFont,sans-serif;
+  --fb:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --fm:'JetBrains Mono',ui-monospace,monospace;
+}
+html,body{background:#070A09}
+.pv{position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;width:100vw;
+  background:var(--bg);color:var(--white);font-family:var(--fb);line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:clip}
+.pv a{color:inherit;text-decoration:none}
+.pv img{max-width:100%;display:block}
+.pv ::selection{background:rgba(16,185,129,.32);color:#fff}
+/* grille verticale technique (très subtile) */
+.pv::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);background-size:7.6vw 100%}
+.pv .wrap{max-width:1280px;margin:0 auto;padding:0 32px;position:relative;z-index:2}
+
+/* mono helpers */
+.pv .mono{font-family:var(--fm);font-size:12px;letter-spacing:.08em;color:var(--muted)}
+.pv .idx{font-family:var(--fm);font-size:12px;letter-spacing:.14em;color:var(--green-2);text-transform:uppercase}
+.pv .idx b{color:var(--muted)}
+.pv h2{font-family:var(--fd);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,4.6vw,58px)}
+.pv .lead{color:var(--muted);font-size:clamp(15px,1.6vw,18px);max-width:62ch;line-height:1.65}
+.pv .sec{position:relative;padding:clamp(80px,10vw,140px) 0;z-index:2}
+.pv .sec-hd{margin-bottom:60px}
+.pv .sec-hd h2{margin:18px 0}
+.pv .sec-hd .lead{margin-top:6px}
+.pv .gr{color:var(--green-2)}
+
+/* crosshair overlay (angles techniques) */
+.pv .xh{position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(var(--green-2),var(--green-2)),linear-gradient(var(--green-2),var(--green-2)),
+    linear-gradient(var(--green-2),var(--green-2)),linear-gradient(var(--green-2),var(--green-2)),
+    linear-gradient(var(--green-2),var(--green-2)),linear-gradient(var(--green-2),var(--green-2)),
+    linear-gradient(var(--green-2),var(--green-2)),linear-gradient(var(--green-2),var(--green-2));
+  background-repeat:no-repeat;
+  background-size:13px 1.4px,1.4px 13px, 13px 1.4px,1.4px 13px, 13px 1.4px,1.4px 13px, 13px 1.4px,1.4px 13px;
+  background-position:top left,top left, top right,top right, bottom left,bottom left, bottom right,bottom right;
+  opacity:.55}
+
+/* ═══════════════ BOUTONS ═══════════════ */
+.pv .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:var(--fm);
+  font-weight:500;font-size:13.5px;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;border:none;
+  padding:16px 26px;border-radius:var(--r-full);transition:all var(--t);line-height:1;white-space:nowrap}
+.pv .btn svg{width:16px;height:16px;transition:transform var(--t)}
+.pv .btn-green{background:var(--green);color:#04241A;font-weight:700}
+.pv .btn-green:hover{background:var(--green-2);transform:translateY(-2px);box-shadow:0 12px 36px rgba(16,185,129,.42)}
+.pv .btn-green:hover svg{transform:translateX(4px)}
+.pv .btn-ghost{background:transparent;color:var(--white);border:1px solid var(--line)}
+.pv .btn-ghost:hover{border-color:var(--green-2);color:var(--green-2)}
+
+/* ═══════════════ BARRE TECHNIQUE + HEADER ═══════════════ */
+.pv .topbar{position:relative;z-index:40;border-bottom:1px solid var(--line-2);background:var(--bg)}
+.pv .topbar .wrap{display:flex;justify-content:space-between;align-items:center;padding:7px 32px;font-family:var(--fm);font-size:11px;letter-spacing:.12em;color:var(--muted-2);text-transform:uppercase}
+.pv .topbar .live{color:var(--green-2);display:inline-flex;align-items:center;gap:7px}
+.pv .topbar .live .dot{width:6px;height:6px;border-radius:50%;background:var(--green-2);box-shadow:0 0 8px var(--green-2);animation:blink 2.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.pv .topbar .hide-s{}
+.pv header{position:sticky;top:0;z-index:50;background:rgba(7,10,9,.72);backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color var(--t),background var(--t)}
+.pv header.scrolled{border-bottom-color:var(--line);background:rgba(7,10,9,.9)}
+.pv .nav{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 0}
+.pv .brand{display:flex;align-items:center;gap:11px}
+.pv .brand .mk{width:30px;height:30px;flex-shrink:0}
+.pv .brand .wm{font-family:var(--fd);font-weight:700;font-size:18px;letter-spacing:-.01em;color:#fff}
+.pv .brand .wm .ap{color:var(--green-2)}
+.pv .nav-links{display:flex;align-items:center;gap:30px}
+.pv .nav-links a{font-family:var(--fm);font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);transition:color var(--t)}
+.pv .nav-links a:hover,.pv .nav-links a.active{color:var(--white)}
+.pv .nav-links a.active{color:var(--green-2)}
+.pv .nav-actions{display:flex;align-items:center;gap:14px}
+.pv .burger{display:none;width:42px;height:42px;border:1px solid var(--line);border-radius:11px;background:var(--glass);color:#fff;cursor:pointer;align-items:center;justify-content:center}
+.pv .burger svg{width:20px;height:20px}
+
+/* ═══════════════ HERO (instrument) ═══════════════ */
+.pv .hero{position:relative;min-height:clamp(660px,93vh,1040px);display:flex;align-items:center;overflow:hidden;padding:50px 0 90px}
+.pv .hero canvas{position:absolute;top:0;right:-6%;width:74%;height:100%;z-index:1;pointer-events:none}
+.pv .hero::after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(90deg,var(--bg) 26%,rgba(7,10,9,.55) 50%,transparent 74%),linear-gradient(0deg,var(--bg) 2%,transparent 26%)}
+.pv .hero .wrap{z-index:3}
+.pv .hero-copy{max-width:660px}
+.pv .eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--fm);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--green-2);border:1px solid var(--line-g);padding:8px 14px;border-radius:var(--r-full)}
+.pv .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--green-2);box-shadow:0 0 8px var(--green-2)}
+.pv .hero h1{font-family:var(--fd);font-weight:600;font-size:clamp(48px,8vw,108px);line-height:.94;letter-spacing:-.045em;margin:26px 0 28px;text-transform:uppercase}
+.pv .hero h1 span{display:block}
+.pv .hero p.sub{font-size:clamp(16px,1.8vw,20px);color:#C2CFC9;max-width:52ch;margin-bottom:38px;line-height:1.55}
+.pv .hero p.sub .amber{color:var(--green-2);font-weight:600}
+.pv .hero-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.pv .hero-cta .btn{padding:18px 32px}
+/* HUD annotations */
+.pv .hud{position:absolute;z-index:3;font-family:var(--fm);font-size:11px;letter-spacing:.1em;color:var(--muted-2);text-transform:uppercase;pointer-events:none}
+.pv .hud.br{right:32px;bottom:30px;text-align:right;line-height:1.9}
+.pv .hud.tr{right:32px;top:24px;color:var(--green-2);display:flex;align-items:center;gap:7px}
+.pv .hud.tr .dot{width:6px;height:6px;border-radius:50%;background:var(--green-2);box-shadow:0 0 8px var(--green-2);animation:blink 2.2s infinite}
+.pv .hud b{color:var(--white);font-weight:500}
+.pv .scope{position:absolute;z-index:3;right:30%;top:50%;width:120px;height:120px;transform:translate(50%,-50%);pointer-events:none;opacity:.5}
+.pv .scope::before,.pv .scope::after{content:'';position:absolute;background:var(--green-2)}
+.pv .scope::before{left:50%;top:0;width:1px;height:100%;transform:translateX(-50%)}
+.pv .scope::after{top:50%;left:0;height:1px;width:100%;transform:translateY(-50%)}
+.pv .scope i{position:absolute;inset:0;border:1px solid var(--green-2);border-radius:50%;opacity:.4}
+.pv .scroll-hint{position:absolute;left:32px;bottom:30px;z-index:3;display:flex;align-items:center;gap:10px;font-family:var(--fm);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2)}
+.pv .scroll-hint .ln{width:46px;height:1px;background:var(--line);position:relative;overflow:hidden}
+.pv .scroll-hint .ln::after{content:'';position:absolute;left:-40%;top:0;width:40%;height:100%;background:var(--green-2);animation:slide 2s ease-in-out infinite}
+@keyframes slide{0%{left:-40%}100%{left:100%}}
+
+/* ═══════════════ SPÉCIFICATIONS (data strip) ═══════════════ */
+.pv .specs{position:relative;z-index:3;border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2);background:rgba(255,255,255,.012)}
+.pv .specs-grid{display:grid;grid-template-columns:repeat(4,1fr)}
+.pv .spec{padding:26px 28px;border-left:1px solid var(--line-2)}
+.pv .spec:first-child{border-left:none}
+.pv .spec .k{font-family:var(--fm);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2);margin-bottom:10px}
+.pv .spec .v{font-family:var(--fd);font-size:30px;font-weight:600;color:#fff;line-height:1}
+.pv .spec .v small{font-size:13px;color:var(--green-2);font-family:var(--fm);font-weight:400}
+
+/* ═══════════════ LA CURE ═══════════════ */
+.pv .cure .grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.pv .cure .panel{position:relative;aspect-ratio:1;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
+  background:radial-gradient(60% 60% at 50% 42%,rgba(16,185,129,.16),transparent 64%),var(--panel)}
+.pv .cure .panel .grid-bg{position:absolute;inset:0;background-image:linear-gradient(var(--line-2) 1px,transparent 1px),linear-gradient(90deg,var(--line-2) 1px,transparent 1px);background-size:40px 40px;opacity:.5}
+.pv .cure .panel .ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.pv .cure .panel .ctr b{font-family:var(--fd);font-size:clamp(60px,9vw,120px);font-weight:600;color:var(--green-2);line-height:1}
+.pv .cure .panel .ctr span{font-family:var(--fm);font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.pv .cure .panel .tag{position:absolute;top:18px;left:18px;font-family:var(--fm);font-size:11px;letter-spacing:.12em;color:var(--muted-2);text-transform:uppercase}
+.pv .cure h2{margin:18px 0 18px}
+.pv .feat{display:grid;gap:2px;margin-top:30px;border-top:1px solid var(--line-2)}
+.pv .feat li{list-style:none;display:flex;gap:18px;align-items:flex-start;padding:20px 0;border-bottom:1px solid var(--line-2)}
+.pv .feat .n{font-family:var(--fm);font-size:12px;color:var(--green-2);padding-top:3px;flex-shrink:0}
+.pv .feat b{font-family:var(--fd);font-size:17px;font-weight:600;display:block;margin-bottom:4px}
+.pv .feat p{font-size:14px;color:var(--muted);margin:0;line-height:1.55}
+
+/* ═══════════════ PROTOCOLE (séquence) ═══════════════ */
+.pv .proto .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.pv .proto .p{position:relative;padding:40px 34px;border-left:1px solid var(--line-2);background:var(--glass)}
+.pv .proto .p:first-child{border-left:none}
+.pv .proto .p .n{font-family:var(--fm);font-size:12px;letter-spacing:.12em;color:var(--green-2);margin-bottom:24px}
+.pv .proto .p h4{font-family:var(--fd);font-size:21px;font-weight:600;margin-bottom:10px}
+.pv .proto .p p{font-size:14px;color:var(--muted);line-height:1.6}
+.pv .proto .p::after{content:'';position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--green-2);transition:width .5s ease}
+.pv .proto .p:hover::after{width:100%}
+
+/* ═══════════════ CONFIGURATIONS (offres) ═══════════════ */
+.pv .offers .sec-hd{text-align:center;max-width:680px;margin:0 auto 56px}
+.pv .offers .sec-hd .lead{margin:14px auto 0}
+.pv .cfg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:stretch}
+.pv .cfg{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:34px 30px;display:flex;flex-direction:column;transition:transform var(--t),border-color var(--t)}
+.pv .cfg:hover{transform:translateY(-6px);border-color:var(--line-g)}
+.pv .cfg.opt{border-color:var(--green);background:linear-gradient(180deg,rgba(16,185,129,.07),var(--panel))}
+.pv .cfg .badge{position:absolute;top:-12px;left:30px;font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:var(--green);color:#04241A;padding:5px 12px;border-radius:4px}
+.pv .cfg .ref{font-family:var(--fm);font-size:11px;letter-spacing:.12em;color:var(--muted-2);text-transform:uppercase}
+.pv .cfg h3{font-family:var(--fd);font-size:26px;font-weight:600;margin:8px 0 4px}
+.pv .cfg .desc{font-size:13.5px;color:var(--muted);min-height:42px}
+.pv .cfg .price{font-family:var(--fd);font-size:46px;font-weight:600;margin:20px 0 2px;line-height:1}
+.pv .cfg .price small{font-family:var(--fm);font-size:12px;color:var(--muted);font-weight:400}
+.pv .cfg .save{font-family:var(--fm);font-size:12px;color:var(--green-2);min-height:18px;letter-spacing:.04em}
+.pv .cfg ul{list-style:none;margin:24px 0;display:grid;gap:13px}
+.pv .cfg ul li{display:flex;gap:12px;font-family:var(--fm);font-size:13px;color:#CFDAD4;letter-spacing:.02em}
+.pv .cfg ul .ck{color:var(--green-2);flex-shrink:0}
+.pv .cfg ul .ck svg{width:15px;height:15px}
+.pv .cfg .btn{margin-top:auto;width:100%}
+.pv .cfg .btn-out{background:transparent;border:1px solid var(--line);color:#fff}
+.pv .cfg .btn-out:hover{border-color:var(--green-2);color:var(--green-2)}
+.pv .reassure{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;margin-top:34px;font-family:var(--fm);font-size:12px;letter-spacing:.04em;color:var(--muted)}
+.pv .reassure span{display:inline-flex;gap:8px;align-items:center}
+.pv .reassure svg{color:var(--green-2)}
+
+/* ═══════════════ LABO (readout) ═══════════════ */
+.pv .lab .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:60px;align-items:center}
+.pv .term{position:relative;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:#060908}
+.pv .term .bar{display:flex;align-items:center;gap:8px;padding:13px 18px;border-bottom:1px solid var(--line-2);font-family:var(--fm);font-size:12px;color:var(--muted)}
+.pv .term .bar .d{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.14)}
+.pv .term .bar .fn{margin-left:8px;color:var(--muted)}
+.pv .term .body{padding:22px 20px;font-family:var(--fm);font-size:13px;line-height:2.05}
+.pv .term .body .ln span{color:var(--muted)}
+.pv .term .body .ln b{float:right;color:#fff;font-weight:500}
+.pv .term .body .ln b.ok{color:var(--green-2)}
+.pv .term .body .cursor{color:var(--green-2);animation:blink 1.1s steps(1) infinite}
+.pv .lab ul{list-style:none;display:grid;gap:16px;margin-top:26px}
+.pv .lab ul li{display:flex;gap:14px;align-items:flex-start;font-size:15px;color:#D5DED9}
+.pv .lab ul .ck{flex-shrink:0;width:24px;height:24px;border-radius:6px;background:rgba(16,185,129,.14);color:var(--green-2);display:flex;align-items:center;justify-content:center}
+.pv .lab ul .ck svg{width:14px;height:14px}
+
+/* ═══════════════ FAQ ═══════════════ */
+.pv .faq .grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:54px;align-items:start}
+.pv .acc{border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.pv .acc .item{border-top:1px solid var(--line-2)}
+.pv .acc .item:first-child{border-top:none}
+.pv .acc .q{width:100%;text-align:left;background:none;border:none;color:#fff;font-family:var(--fb);font-size:16px;font-weight:500;padding:22px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:18px}
+.pv .acc .q .qn{font-family:var(--fm);font-size:12px;color:var(--green-2);margin-right:14px}
+.pv .acc .q .ic{flex-shrink:0;width:22px;height:22px;position:relative}
+.pv .acc .q .ic::before,.pv .acc .q .ic::after{content:'';position:absolute;background:var(--green-2);top:50%;left:50%;transform:translate(-50%,-50%)}
+.pv .acc .q .ic::before{width:12px;height:1.5px}
+.pv .acc .q .ic::after{width:1.5px;height:12px;transition:transform var(--t)}
+.pv .acc .item.open .q .ic::after{transform:translate(-50%,-50%) scaleY(0)}
+.pv .acc .a{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.pv .acc .a p{padding:0 24px 24px 60px;color:var(--muted);font-size:14.5px;line-height:1.65}
+
+/* ═══════════════ CTA FINAL ═══════════════ */
+.pv .final .box{position:relative;overflow:hidden;border:1px solid var(--line-g);border-radius:var(--r-lg);text-align:center;padding:clamp(50px,7vw,90px) 32px;
+  background:radial-gradient(70% 130% at 50% 0%,rgba(16,185,129,.16),transparent 60%),var(--panel)}
+.pv .final .box .grid-bg{position:absolute;inset:0;background-image:linear-gradient(90deg,var(--line-2) 1px,transparent 1px);background-size:60px 100%;opacity:.5;pointer-events:none}
+.pv .final h2{margin:18px auto 18px;max-width:20ch}
+.pv .final p{color:var(--muted);max-width:50ch;margin:0 auto 34px;font-size:16px}
+.pv .final .hero-cta{justify-content:center;display:flex;gap:14px;flex-wrap:wrap}
+
+/* ═══════════════ FOOTER ═══════════════ */
+.pv footer.site{position:relative;z-index:2;border-top:1px solid var(--line);background:var(--panel);padding:66px 0 28px}
+.pv .foot-top{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:34px;margin-bottom:50px}
+.pv .foot-brand .brand{margin-bottom:18px}
+.pv .foot-brand p{font-family:var(--fm);font-size:12.5px;color:var(--muted);max-width:36ch;line-height:1.7}
+.pv .foot-col h5{font-family:var(--fm);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);margin-bottom:20px}
+.pv .foot-col a{display:block;font-size:14px;color:var(--muted);padding:7px 0;transition:color var(--t)}
+.pv .foot-col a:hover{color:var(--green-2)}
+.pv .foot-disclaimer{font-family:var(--fm);font-size:11.5px;color:var(--muted-2);line-height:1.7;padding:22px 0;border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2);margin-bottom:22px}
+.pv .foot-btm{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;font-family:var(--fm);font-size:12px;color:var(--muted-2);letter-spacing:.04em}
+
+/* ═══════════════ REVEAL ═══════════════ */
+.pv .r{transition:opacity .8s ease,transform .8s cubic-bezier(.16,.84,.32,1)}
+.pv.anim .r{opacity:0;transform:translateY(30px)}
+.pv.anim .r.in{opacity:1;transform:none}
+.pv .d1{transition-delay:.09s}.pv .d2{transition-delay:.18s}.pv .d3{transition-delay:.27s}.pv .d4{transition-delay:.36s}
+
+/* ═══════════════ RESPONSIVE ═══════════════ */
+@media(max-width:1024px){
+  .pv .nav-links{display:none}.pv .burger{display:flex}
+  .pv .cure .grid,.pv .lab .grid,.pv .faq .grid{grid-template-columns:1fr;gap:44px}
+  .pv .cure .panel{max-width:440px;margin:0 auto;order:-1}
+  .pv .specs-grid{grid-template-columns:1fr 1fr}.pv .spec:nth-child(3){border-left:none}
+  .pv .proto .grid,.pv .cfg-grid{grid-template-columns:1fr}
+  .pv .proto .p{border-left:none;border-top:1px solid var(--line-2)}.pv .proto .p:first-child{border-top:none}
+  .pv .cfg.opt{order:-1}
+  .pv .foot-top{grid-template-columns:1fr 1fr}
+  .pv .hero canvas{width:100%;right:0;opacity:.5}
+  .pv .scope,.pv .hud.br{display:none}
+}
+@media(max-width:600px){
+  .pv .wrap{padding:0 20px}
+  .pv .topbar .hide-s{display:none}
+  .pv .specs-grid,.pv .foot-top{grid-template-columns:1fr}
+  .pv .spec{border-left:none;border-top:1px solid var(--line-2)}.pv .spec:first-child{border-top:none}
+  .pv .hero{min-height:auto;padding:40px 0 80px}
+  .pv .hero-cta .btn{width:100%}
+  .pv .acc .a p{padding-left:24px}
+}
+@media(prefers-reduced-motion:reduce){
+  .pv .topbar .live .dot,.pv .hud.tr .dot,.pv .scroll-hint .ln::after,.pv .term .body .cursor{animation:none}
+  .pv .r,.pv.anim .r{transition:none!important;opacity:1!important;transform:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="pv">
+
+  <!-- BARRE TECHNIQUE -->
+  <div class="topbar">
+    <div class="wrap">
+      <span>PEPT'VOLUTION&nbsp;//&nbsp;MÉTABOLIC&nbsp;OS</span>
+      <span class="hide-s">PROTOCOLE DE PRÉCISION · 1 PRISE / SEMAINE</span>
+      <span class="live"><span class="dot"></span> SYSTÈME ACTIF</span>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header id="hdr">
+    <div class="wrap">
+      <nav class="nav">
+        <a href="#" class="brand" aria-label="Pept'volution — accueil">
+          <svg class="mk" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <rect x="2.5" y="2.5" width="27" height="27" rx="6" stroke="#34D399" stroke-width="1.3"/>
+            <path d="M10 9c0 5 12 4 12 9s-12 4-12 9" stroke="#34D399" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="10" cy="9" r="2" fill="#34D399"/><circle cx="22" cy="27" r="2" fill="#fff"/>
+          </svg>
+          <span class="wm">PEPT<span class="ap">'</span>VOLUTION</span>
+        </a>
+        <div class="nav-links">
+          <a href="#" class="active">Accueil</a>
+          <a href="#cure">La Cure</a>
+          <a href="#protocole">Protocole</a>
+          <a href="#labo">Laboratoire</a>
+          <a href="#bilan">Bilan gratuit</a>
+        </div>
+        <div class="nav-actions">
+          <a href="#configs" class="btn btn-green">Démarrer</a>
+          <button class="burger" id="burger" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <canvas id="dna" aria-hidden="true"></canvas>
+    <span class="scope" aria-hidden="true"><i></i></span>
+    <div class="hud tr"><span class="dot"></span> ● LIVE · RENDER</div>
+    <div class="hud br">SEQ <b>PEPT-0481</b><br>PUR. <b>99.4%</b> · HPLC<br>ROT. <b>0.32°/s</b></div>
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="eyebrow r"><span class="dot"></span> Métabolic Operating System</span>
+        <h1 class="r d1"><span>Une séquence.</span><span>Une cure.</span><span class="gr">Une évolution.</span></h1>
+        <p class="sub r d2">PEPT'VOLUTION réinvente la cure peptide comme un protocole d'ingénierie.
+          <span class="amber">1 prise par semaine</span>, pureté vérifiée en laboratoire, traçabilité totale.
+          Des résultats que personne n'aura besoin de demander.</p>
+        <div class="hero-cta r d3">
+          <a href="#configs" class="btn btn-green">Démarrer ma cure
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="#bilan" class="btn btn-ghost">Faire mon bilan gratuit</a>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint" aria-hidden="true"><span class="ln"></span> Défiler</div>
+  </section>
+
+  <!-- SPÉCIFICATIONS -->
+  <div class="specs">
+    <div class="wrap">
+      <div class="specs-grid">
+        <div class="spec"><div class="k">Pureté</div><div class="v">99.4<small>% HPLC</small></div></div>
+        <div class="spec"><div class="k">Fréquence</div><div class="v">1<small>× / semaine</small></div></div>
+        <div class="spec"><div class="k">Tests tiers</div><div class="v">100<small>% des lots</small></div></div>
+        <div class="spec"><div class="k">Chaîne du froid</div><div class="v">2–8<small>°C</small></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LA CURE -->
+  <section class="sec cure" id="cure">
+    <div class="wrap">
+      <div class="grid">
+        <div class="panel r"><span class="xh"></span><span class="grid-bg"></span><span class="tag">FIG.01 — PROTOCOLE</span>
+          <div class="ctr"><b>1×</b><span>par semaine</span></div>
+        </div>
+        <div class="r d1">
+          <div class="idx"><b>[ 01 ]</b> — LA CURE</div>
+          <h2>Un protocole.<br>Zéro complexité.</h2>
+          <p class="lead">Pas de routine impossible à tenir. Un peptide, une prise hebdomadaire, un protocole
+            calibré pour celles et ceux qui mènent une vie pleine. La science exécute — toi, tu vis.</p>
+          <ul class="feat">
+            <li><span class="n">A1</span><div><b>Simple à tenir</b><p>Une prise par semaine, point. Aucune discipline héroïque exigée.</p></div></li>
+            <li><span class="n">A2</span><div><b>Qualité vérifiée</b><p>Pureté contrôlée en laboratoire, certificat d'analyse par lot.</p></div></li>
+            <li><span class="n">A3</span><div><b>Discrétion totale</b><p>Emballage neutre, données chiffrées, confidentialité absolue.</p></div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROTOCOLE -->
+  <section class="sec proto" id="protocole">
+    <div class="wrap">
+      <div class="sec-hd r"><div class="idx"><b>[ 02 ]</b> — SÉQUENCE</div><h2>De ton bilan à ton évolution</h2></div>
+      <div class="grid r d1">
+        <div class="p"><div class="n">PHASE 01</div><h4>Bilan gratuit</h4><p>Quelques questions pour cartographier ton profil et vérifier que la cure te correspond. Sans engagement.</p></div>
+        <div class="p"><div class="n">PHASE 02</div><h4>Réception</h4><p>Commande en deux minutes. Expédition rapide, discrète, sous chaîne du froid jusqu'à ta porte.</p></div>
+        <div class="p"><div class="n">PHASE 03</div><h4>Évolution</h4><p>Une prise par semaine, et tu laisses le protocole opérer. Des résultats qui se voient sans qu'on les demande.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONFIGURATIONS (offres) -->
+  <section class="sec offers" id="configs">
+    <div class="wrap">
+      <div class="sec-hd">
+        <div class="idx" style="justify-content:center"><b>[ 03 ]</b> — CONFIGURATIONS</div>
+        <h2>Un produit. Trois durées.</h2>
+        <p class="lead">Le même peptide, la même pureté — tu choisis simplement la quantité. Plus la cure est longue, plus le tarif baisse.</p>
+      </div>
+      <!-- ⚠️ PLACEHOLDER : confirme les 3 quantités exactes + prix réels + nom du peptide -->
+      <div class="cfg-grid">
+        <div class="cfg r"><span class="xh"></span>
+          <div class="ref">CFG.01 — DÉCOUVERTE</div>
+          <h3>Cure 1 mois</h3>
+          <p class="desc">Pour initialiser le protocole et sentir les premiers effets.</p>
+          <div class="price">—€</div><div class="save">&nbsp;</div>
+          <ul>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>4 prises (1 mois)</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Certificat d'analyse inclus</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Livraison discrète</li>
+          </ul>
+          <a href="#" class="btn btn-out">Sélectionner</a>
+        </div>
+        <div class="cfg opt r d1"><span class="xh"></span><span class="badge">// Optimal</span>
+          <div class="ref">CFG.02 — ÉQUILIBRE</div>
+          <h3>Cure 3 mois</h3>
+          <p class="desc">Le meilleur rapport durée / résultat. Le préféré des membres.</p>
+          <div class="price">—€</div><div class="save">ÉCONOMIE −XX% vs 1 mois</div>
+          <ul>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>12 prises (3 mois)</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Bilan personnalisé offert</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Suivi prioritaire</li>
+          </ul>
+          <a href="#" class="btn btn-green">Démarrer ma cure</a>
+        </div>
+        <div class="cfg r d2"><span class="xh"></span>
+          <div class="ref">CFG.03 — ENGAGEMENT</div>
+          <h3>Cure 6 mois</h3>
+          <p class="desc">Le tarif le plus avantageux, pour aller au bout du protocole.</p>
+          <div class="price">—€</div><div class="save">ÉCONOMIE −XX% vs 1 mois</div>
+          <ul>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>24 prises (6 mois)</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Bilan + suivi prioritaire</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Livraison express offerte</li>
+          </ul>
+          <a href="#" class="btn btn-out">Sélectionner</a>
+        </div>
+      </div>
+      <div class="reassure">
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Paiement sécurisé</span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Expédition 24–48 h</span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Discrétion garantie</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- LABO -->
+  <section class="sec lab" id="labo">
+    <div class="wrap">
+      <div class="grid">
+        <div class="term r"><span class="xh"></span>
+          <div class="bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="fn">coa_PEPT-0481.log</span></div>
+          <!-- ⚠️ PLACEHOLDER : extrait d'un VRAI certificat d'analyse -->
+          <div class="body">
+            <div class="ln"><span>&gt; identité (MS)</span><b class="ok">CONFIRMÉE</b></div>
+            <div class="ln"><span>&gt; pureté (HPLC)</span><b class="ok">99.4 %</b></div>
+            <div class="ln"><span>&gt; endotoxines</span><b>&lt; 0.5 EU/mg</b></div>
+            <div class="ln"><span>&gt; métaux lourds</span><b class="ok">CONFORME</b></div>
+            <div class="ln"><span>&gt; laboratoire</span><b>TIERS INDÉP.</b></div>
+            <div class="ln"><span>&gt; statut</span><b class="ok">VALIDÉ <span class="cursor">_</span></b></div>
+          </div>
+        </div>
+        <div class="r d1">
+          <div class="idx"><b>[ 04 ]</b> — LABORATOIRE</div>
+          <h2>Chaque lot.<br>Chaque test. <span class="gr">Vérifiable.</span></h2>
+          <ul>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span><span>Certificat d'analyse (COA) émis par un laboratoire <b>tiers indépendant</b>.</span></li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span><span>Pureté et identité confirmées par <b>HPLC-MS</b> — aucun déclaratif sans preuve.</span></li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span><span>Numéro de lot relié à son rapport, conservation sous <b>chaîne du froid</b>.</span></li>
+          </ul>
+          <a href="#configs" class="btn btn-ghost" style="margin-top:30px">Voir les cures</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="sec faq" id="faq">
+    <div class="wrap">
+      <div class="grid">
+        <div class="sec-hd r" style="margin-bottom:0"><div class="idx"><b>[ 05 ]</b> — FAQ</div><h2>Tes questions, nos réponses</h2><p class="lead" style="margin-top:14px">Une autre question ? Le bilan gratuit est aussi l'occasion d'échanger avec nous.</p></div>
+        <!-- ⚠️ PLACEHOLDER : réponses à adapter et faire valider juridiquement -->
+        <div class="acc r d1">
+          <div class="item open"><button class="q"><span><span class="qn">Q1</span>Comment fonctionne la cure ?</span><span class="ic"></span></button><div class="a"><p>Une prise par semaine, sur la durée que tu choisis (1, 3 ou 6 mois). Le protocole est volontairement simple pour être tenu sans effort, même avec un agenda chargé.</p></div></div>
+          <div class="item"><button class="q"><span><span class="qn">Q2</span>Le bilan gratuit, c'est quoi ?</span><span class="ic"></span></button><div class="a"><p>Un court questionnaire pour comprendre ton profil et vérifier que la cure te convient. Gratuit, sans engagement, il oriente ton choix de configuration.</p></div></div>
+          <div class="item"><button class="q"><span><span class="qn">Q3</span>Vos produits sont-ils testés ?</span><span class="ic"></span></button><div class="a"><p>Oui. Chaque lot dispose d'un certificat d'analyse (pureté, identité) émis par un laboratoire tiers indépendant, rattaché au numéro de lot de ton flacon. [À compléter avec ta politique officielle.]</p></div></div>
+          <div class="item"><button class="q"><span><span class="qn">Q4</span>La livraison est-elle discrète ?</span><span class="ic"></span></button><div class="a"><p>Totalement. Emballage strictement neutre, aucune mention du contenu, données client chiffrées et jamais revendues.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="sec final" id="bilan">
+    <div class="wrap">
+      <div class="box r"><span class="xh"></span><span class="grid-bg"></span>
+        <div class="idx" style="justify-content:center">[ INIT ] — DÉMARRAGE</div>
+        <h2>Ton évolution commence par un bilan. Gratuit.</h2>
+        <p>Deux minutes pour savoir si la cure est faite pour toi. Sans engagement, et toujours confidentiel.</p>
+        <div class="hero-cta">
+          <a href="#" class="btn btn-green">Faire mon bilan gratuit
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="#configs" class="btn btn-ghost">Voir les cures</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site">
+    <div class="wrap">
+      <div class="foot-top">
+        <div class="foot-brand">
+          <a href="#" class="brand"><svg class="mk" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="27" height="27" rx="6" stroke="#34D399" stroke-width="1.3"/><path d="M10 9c0 5 12 4 12 9s-12 4-12 9" stroke="#34D399" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="9" r="2" fill="#34D399"/><circle cx="22" cy="27" r="2" fill="#fff"/></svg><span class="wm">PEPT<span class="ap">'</span>VOLUTION</span></a>
+          <p>La cure peptide repensée comme un protocole de précision. 1 prise / semaine. Qualité vérifiée en laboratoire.</p>
+        </div>
+        <div class="foot-col"><h5>Protocole</h5><a href="#cure">La Cure</a><a href="#configs">Les 3 cures</a><a href="#bilan">Bilan gratuit</a><a href="#faq">FAQ</a></div>
+        <div class="foot-col"><h5>Système</h5><a href="#">Espace Membre</a><a href="#">Distributeurs</a><a href="#">Pro</a><a href="#labo">Laboratoire</a></div>
+        <div class="foot-col"><h5>Légal</h5><a href="/pages/contact">Contact</a><a href="/pages/mentions-legales">Mentions légales</a><a href="/pages/cgv">CGV</a><a href="/pages/confidentialite">Confidentialité</a></div>
+      </div>
+      <!-- ⚠️ PLACEHOLDER : disclaimer à valider par un juriste selon ton cadre réglementaire. -->
+      <p class="foot-disclaimer">Informations fournies à titre indicatif, ne remplaçant pas un avis médical. Aucune allégation thérapeutique n'est formulée. [Texte légal à finaliser avec votre conseil juridique.]</p>
+      <div class="foot-btm"><span>© 2026 PEPT'VOLUTION — Tous droits réservés.</span><span>UNE SÉQUENCE. UNE CURE. UNE ÉVOLUTION.</span></div>
+    </div>
+  </footer>
+
+</div>
+
+<!-- ═══════════════ LIBRAIRIES (CDN, fin de body) ═══════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+/* Progressive enhancement — blocs isolés en try/catch. */
+(function(){
+  "use strict";
+  var root=document.querySelector('.pv');
+  var REDUCED=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var MOBILE=window.matchMedia&&window.matchMedia('(max-width:768px)').matches;
+  function revealAll(){root.querySelectorAll('.r').forEach(function(el){el.classList.add('in');});}
+
+  /* 1) Reveals */
+  try{
+    if(!REDUCED&&'IntersectionObserver'in window){
+      root.classList.add('anim');
+      var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target);}});},{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+      root.querySelectorAll('.r').forEach(function(el){obs.observe(el);});
+      requestAnimationFrame(function(){root.querySelectorAll('.r').forEach(function(el){if(el.getBoundingClientRect().top<window.innerHeight*.92)el.classList.add('in');});});
+      setTimeout(revealAll,2600);
+    } else revealAll();
+  }catch(e){revealAll();}
+
+  /* 2) Header scrolled */
+  try{var h=document.getElementById('hdr');var f=function(){h.classList.toggle('scrolled',window.scrollY>10);};f();window.addEventListener('scroll',f,{passive:true});}catch(e){}
+
+  /* 3) FAQ */
+  try{
+    root.querySelectorAll('.acc .item').forEach(function(item){
+      var a=item.querySelector('.a');var setH=function(){a.style.maxHeight=item.classList.contains('open')?(a.scrollHeight+'px'):'0px';};
+      if(item.classList.contains('open'))requestAnimationFrame(setH);
+      item.querySelector('.q').addEventListener('click',function(){
+        var open=!item.classList.contains('open');
+        item.parentElement.querySelectorAll('.item.open').forEach(function(o){if(o!==item){o.classList.remove('open');o.querySelector('.a').style.maxHeight='0px';}});
+        item.classList.toggle('open',open);setH();
+      });
+      window.addEventListener('resize',setH,{passive:true});
+    });
+  }catch(e){}
+
+  /* 4) Smooth scroll + burger */
+  try{
+    root.querySelectorAll('a[href^="#"]').forEach(function(link){link.addEventListener('click',function(ev){var id=link.getAttribute('href');if(id.length<2)return;var t=document.querySelector(id);if(t){ev.preventDefault();t.scrollIntoView({behavior:REDUCED?'auto':'smooth',block:'start'});}});});
+    var b=document.getElementById('burger');if(b)b.addEventListener('click',function(){var t=document.getElementById('cure');if(t)t.scrollIntoView({behavior:REDUCED?'auto':'smooth'});});
+  }catch(e){}
+
+  /* 5) GSAP parallaxe hero */
+  try{if(!REDUCED&&window.gsap&&window.ScrollTrigger){gsap.registerPlugin(ScrollTrigger);gsap.to('.pv .hero-copy',{yPercent:-8,opacity:.7,ease:'none',scrollTrigger:{trigger:'.pv .hero',start:'top top',end:'bottom top',scrub:true}});}}catch(e){}
+
+  /* 6) MOLÉCULE 3D (instrument) + fallback bokeh */
+  var canvas=document.getElementById('dna');
+  function hasWebGL(){try{var c=document.createElement('canvas');return !!(window.WebGLRenderingContext&&(c.getContext('webgl')||c.getContext('experimental-webgl')));}catch(e){return false;}}
+  function glowTexture(THREE){var c=document.createElement('canvas');c.width=c.height=64;var g=c.getContext('2d');var grd=g.createRadialGradient(32,32,0,32,32,32);grd.addColorStop(0,'rgba(220,255,240,1)');grd.addColorStop(.25,'rgba(52,211,153,.8)');grd.addColorStop(1,'rgba(16,185,129,0)');g.fillStyle=grd;g.beginPath();g.arc(32,32,32,0,6.2832);g.fill();return new THREE.CanvasTexture(c);}
+
+  function fallbackBokeh(){
+    try{var ctx=canvas.getContext('2d');if(!ctx)return;var hero=canvas.parentElement,P=[],N=MOBILE?34:58;
+      function size(){var d=Math.min(window.devicePixelRatio||1,2);canvas.width=hero.offsetWidth*d;canvas.height=hero.offsetHeight*d;ctx.setTransform(d,0,0,d,0,0);}size();
+      for(var i=0;i<N;i++)P.push({x:Math.random()*hero.offsetWidth,y:Math.random()*hero.offsetHeight,r:1+Math.random()*2.6,vx:(-.5+Math.random())*.22,vy:(-.5+Math.random())*.22,a:.2+Math.random()*.5});
+      function draw(){var w=hero.offsetWidth,h=hero.offsetHeight;ctx.clearRect(0,0,w,h);for(var i=0;i<N;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;var g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*4);g.addColorStop(0,'rgba(52,211,153,'+p.a+')');g.addColorStop(1,'rgba(16,185,129,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,p.r*4,0,6.2832);ctx.fill();}if(!REDUCED)requestAnimationFrame(draw);}
+      draw();window.addEventListener('resize',function(){size();if(REDUCED)draw();},{passive:true});
+    }catch(e){}
+  }
+  function cyl(THREE,p1,p2,radius,mat){var dir=new THREE.Vector3().subVectors(p2,p1),len=dir.length();var g=new THREE.CylinderGeometry(radius,radius,len,10,1,true);var m=new THREE.Mesh(g,mat);m.position.copy(p1).addScaledVector(dir,.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.clone().normalize());return m;}
+
+  function initDNA(){
+    if(!window.THREE||!hasWebGL())return false;
+    try{
+      var THREE=window.THREE,hero=canvas.parentElement;
+      var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:true});
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+      renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.16;
+      var scene=new THREE.Scene();scene.fog=new THREE.Fog(0x060908,30,80);
+      var camera=new THREE.PerspectiveCamera(50,1,.1,200);camera.position.set(0,0,46);
+      scene.add(new THREE.AmbientLight(0x2e4f40,.5));
+      var key=new THREE.PointLight(0xffffff,1.1,160);key.position.set(20,24,28);scene.add(key);
+      var gl=new THREE.PointLight(0x10B981,1.6,120);gl.position.set(-22,-4,12);scene.add(gl);
+      var gl2=new THREE.PointLight(0x34D399,.8,90);gl2.position.set(10,-16,18);scene.add(gl2);
+
+      var group=new THREE.Group();scene.add(group);
+      var mGreen=new THREE.MeshStandardMaterial({color:0x0E9C6E,emissive:0x10B981,emissiveIntensity:.4,metalness:.5,roughness:.26});
+      var mGreenL=new THREE.MeshStandardMaterial({color:0x34D399,emissive:0x34D399,emissiveIntensity:.6,metalness:.5,roughness:.2});
+      var mWhite=new THREE.MeshStandardMaterial({color:0xE9FFF6,emissive:0xCFEFE2,emissiveIntensity:.5,metalness:.4,roughness:.25});
+      var mBone=new THREE.MeshStandardMaterial({color:0x0E9C6E,emissive:0x0E9C6E,emissiveIntensity:.28,metalness:.6,roughness:.3});
+
+      var N=MOBILE?16:26,TURNS=2.55,R=6.2,H=34,sR=.86;
+      var sGeo=new THREE.SphereGeometry(sR,18,18);var A=[],B=[];
+      for(var i=0;i<N;i++){var t=i/(N-1),y=-H/2+t*H,ang=t*TURNS*Math.PI*2;A.push(new THREE.Vector3(Math.cos(ang)*R,y,Math.sin(ang)*R));B.push(new THREE.Vector3(Math.cos(ang+Math.PI)*R,y,Math.sin(ang+Math.PI)*R));}
+      for(i=0;i<N;i++){
+        var a=new THREE.Mesh(sGeo,(i%7===0)?mWhite:mGreenL);a.position.copy(A[i]);group.add(a);
+        var b=new THREE.Mesh(sGeo,(i%7===4)?mWhite:mGreen);b.position.copy(B[i]);group.add(b);
+        if(i<N-1){group.add(cyl(THREE,A[i],A[i+1],.32,mBone));group.add(cyl(THREE,B[i],B[i+1],.32,mBone));}
+        group.add(cyl(THREE,A[i],B[i],.17,mGreen));
+      }
+      group.rotation.z=.16;
+
+      var pc=MOBILE?70:140,pg=new THREE.BufferGeometry(),pp=new Float32Array(pc*3);
+      for(i=0;i<pc;i++){pp[i*3]=(Math.random()-.5)*72;pp[i*3+1]=(Math.random()-.5)*56;pp[i*3+2]=(Math.random()-.5)*46-6;}
+      pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
+      var pts=new THREE.Points(pg,new THREE.PointsMaterial({map:glowTexture(THREE),color:0x34D399,size:1.6,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true}));
+      scene.add(pts);
+
+      function resize(){var w=hero.offsetWidth,h=hero.offsetHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.position.z=w<760?62:46;}
+      resize();window.addEventListener('resize',resize,{passive:true});
+
+      var tmx=0,tmy=0,mx=0,my=0;
+      if(!('ontouchstart'in window)){window.addEventListener('mousemove',function(e){tmx=(e.clientX/window.innerWidth-.5)*.55;tmy=(e.clientY/window.innerHeight-.5)*.4;},{passive:true});}
+      var visible=true;if('IntersectionObserver'in window){new IntersectionObserver(function(es){visible=es[0].isIntersecting;},{threshold:.01}).observe(hero);}
+      var scrollRot=0;try{if(!REDUCED&&window.gsap&&window.ScrollTrigger){ScrollTrigger.create({trigger:hero,start:'top top',end:'bottom top',scrub:true,onUpdate:function(s){scrollRot=s.progress*Math.PI*1.0;}});}}catch(e){}
+
+      var raf,autoRot=0;
+      function tick(){
+        raf=requestAnimationFrame(tick);
+        if(!visible||document.hidden)return;
+        if(!REDUCED)autoRot+=.003;
+        mx+=(tmx-mx)*.05;my+=(tmy-my)*.05;
+        group.rotation.y=autoRot+scrollRot;
+        group.rotation.x=-my*.6+Math.sin(Date.now()*.0004)*.04;
+        group.rotation.z=.16;group.position.x=mx*5;
+        camera.position.x=mx*3;camera.lookAt(0,0,0);
+        pts.rotation.y-=.0006;
+        renderer.render(scene,camera);
+      }
+      tick();
+      document.addEventListener('visibilitychange',function(){if(!document.hidden){cancelAnimationFrame(raf);tick();}});
+      return true;
+    }catch(e){return false;}
+  }
+
+  try{if(canvas){if(REDUCED){fallbackBokeh();}else{requestAnimationFrame(function(){if(!initDNA())fallbackBokeh();});}}}catch(e){}
+})();
+</script>
+</body>
+</html>
