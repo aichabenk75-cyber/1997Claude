@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  MISTER PEPTIDE — HOME v2 (dossier isolé /misterpeptide)
+  ════════════════════════════════════════════════════════════════════════════
+  • Identité reprise de misterpeptide.app : VERT émeraude + BLANC, accent ORANGE,
+    fond vert-noir profond, header clair givré.
+  • ADN 3D RÉALISTE (Three.js) : double hélice en sphères + liaisons + cylindres,
+    lumières dramatiques, tone mapping ACES (effet glow), particules bokeh.
+    Interactif (parallaxe souris + rotation au scroll) — esprit Bruno Simon.
+  • Progressive enhancement : sans WebGL/JS → fallback bokeh canvas, page intacte.
+  • Offre : 1 peptide (la cure), 3 offres = 3 quantités.
+
+  ⚠️ À CONFIRMER (cherche "PLACEHOLDER") : nom exact du peptide, les 3 prix/quantités,
+     vrais témoignages, textes légaux. Je n'invente aucune fausse preuve.
+  ════════════════════════════════════════════════════════════════════════════
+-->
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mister Peptide — Une chaîne. Une cure. Un mois.</title>
+<meta name="description" content="La cure peptide pensée pour les actifs. 1 prise par semaine. Pureté certifiée, discrétion totale."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════ TOKENS (scopés sous .mp) ═══════════════ */
+.mp,.mp *,.mp *::before,.mp *::after{box-sizing:border-box;margin:0;padding:0}
+.mp{
+  --ink:#06110C;--ink-2:#0A1812;--ink-3:#0F2218;
+  --green:#10B981;--green-2:#34D399;--green-dk:#0E9C6E;--green-deep:#065F46;
+  --amber:#F59E0B;--orange:#F97316;
+  --white:#F6FBF8;--muted:#A3B8AE;--muted-2:#6E837A;
+  --light:#FFFFFF;--ink-text:#0E1B14;
+  --line:rgba(255,255,255,.09);--line-2:rgba(255,255,255,.05);
+  --glass:rgba(255,255,255,.04);--glass-2:rgba(255,255,255,.07);
+  --r-sm:10px;--r:16px;--r-lg:22px;--r-full:100px;
+  --t:.25s cubic-bezier(.4,0,.2,1);
+  --fd:'Space Grotesk',-apple-system,BlinkMacSystemFont,sans-serif;
+  --fb:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+}
+html,body{background:#06110C}
+.mp{position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;width:100vw;
+  background:var(--ink);color:var(--white);font-family:var(--fb);line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:clip}
+.mp a{color:inherit;text-decoration:none}
+.mp img{max-width:100%;display:block}
+.mp ::selection{background:rgba(16,185,129,.3)}
+.mp .container{max-width:1200px;margin:0 auto;padding:0 28px;position:relative;z-index:2}
+/* halos verts d'ambiance (hors hero) */
+.mp::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(60% 50% at 80% 12%,rgba(16,185,129,.08),transparent 60%),
+             radial-gradient(50% 40% at 10% 85%,rgba(16,185,129,.06),transparent 60%)}
+
+.mp .eyebrow{font-family:var(--fb);font-size:12px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--green-2);display:inline-flex;align-items:center;gap:9px}
+.mp .eyebrow::before{content:'';width:22px;height:2px;background:var(--green);border-radius:2px}
+.mp h2{font-family:var(--fd);font-weight:700;letter-spacing:-.025em;line-height:1.08;
+  font-size:clamp(30px,4.4vw,50px)}
+.mp .lead{color:var(--muted);font-size:clamp(15px,1.6vw,18px);max-width:60ch}
+.mp .sec{position:relative;padding:clamp(70px,9vw,118px) 0;z-index:2}
+.mp .sec-hd{max-width:720px;margin-bottom:52px}
+.mp .sec-hd h2{margin:16px 0 16px}
+.mp .amber{color:var(--amber);font-weight:700;background:linear-gradient(transparent 62%,rgba(245,158,11,.25) 0);
+  padding:0 .12em;border-radius:3px}
+
+/* ═══════════════ BOUTONS ═══════════════ */
+.mp .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:var(--fb);
+  font-weight:700;font-size:15px;cursor:pointer;border:none;padding:16px 30px;border-radius:var(--r-full);
+  transition:all var(--t);line-height:1;white-space:nowrap}
+.mp .btn svg{width:18px;height:18px;transition:transform var(--t)}
+.mp .btn-green{background:linear-gradient(135deg,var(--green-2),var(--green));color:#04241A;
+  box-shadow:0 8px 30px rgba(16,185,129,.35)}
+.mp .btn-green:hover{transform:translateY(-2px);box-shadow:0 14px 42px rgba(16,185,129,.5)}
+.mp .btn-green:hover svg{transform:translateX(4px)}
+.mp .btn-ghost{background:var(--glass);color:var(--white);border:1px solid var(--line);backdrop-filter:blur(8px)}
+.mp .btn-ghost:hover{border-color:rgba(52,211,153,.6);background:var(--glass-2)}
+
+.mp .pill{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--white);
+  background:rgba(255,255,255,.06);border:1px solid var(--line);padding:8px 16px;border-radius:var(--r-full);
+  backdrop-filter:blur(8px)}
+.mp .pill svg{width:15px;height:15px;color:var(--green-2)}
+
+/* ═══════════════ HEADER CLAIR ═══════════════ */
+.mp header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(244,248,246,.9));
+  backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,.06)}
+.mp .nav{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:13px 0}
+.mp .brand{display:flex;align-items:center;gap:10px;color:var(--ink-text)}
+.mp .brand .mark{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--green-2),var(--green-dk));
+  display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:700;font-size:15px;color:#04241A;flex-shrink:0;
+  box-shadow:0 4px 14px rgba(16,185,129,.35)}
+.mp .brand b{font-family:var(--fd);font-weight:700;font-size:18px;letter-spacing:-.01em}
+.mp .nav-links{display:flex;align-items:center;gap:4px}
+.mp .nav-links a{font-size:14.5px;font-weight:500;color:#46584F;padding:9px 14px;border-radius:var(--r-full);transition:all var(--t)}
+.mp .nav-links a:hover{color:var(--ink-text);background:rgba(0,0,0,.04)}
+.mp .nav-links a.active{color:var(--green-dk);background:#DCFCE7;font-weight:600}
+.mp .nav-actions{display:flex;align-items:center;gap:14px}
+.mp .lang{display:flex;align-items:center;gap:6px;color:#46584F;font-size:14px;font-weight:600}
+.mp .lang svg{width:17px;height:17px}
+.mp .btn-login{background:linear-gradient(135deg,var(--green-2),var(--green));color:#04241A;font-weight:700;font-size:14.5px;
+  padding:11px 22px;border-radius:var(--r-full);transition:all var(--t);box-shadow:0 6px 18px rgba(16,185,129,.3)}
+.mp .btn-login:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(16,185,129,.45)}
+.mp .burger{display:none;width:42px;height:42px;border:1px solid rgba(0,0,0,.1);border-radius:11px;
+  background:#fff;color:var(--ink-text);cursor:pointer;align-items:center;justify-content:center}
+.mp .burger svg{width:20px;height:20px}
+
+/* ═══════════════ HERO + ADN ═══════════════ */
+.mp .hero{position:relative;min-height:clamp(640px,92vh,1000px);display:flex;align-items:center;overflow:hidden;
+  padding:40px 0 70px;
+  background:radial-gradient(70% 60% at 62% 42%,rgba(16,185,129,.16),transparent 62%),
+             radial-gradient(40% 40% at 80% 70%,rgba(245,158,11,.07),transparent 60%),
+             #05100B}
+.mp .hero canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.mp .hero::after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(90deg,#05100B 0%,rgba(5,16,11,.78) 32%,rgba(5,16,11,.15) 62%,transparent 80%),
+            linear-gradient(0deg,#06110C 1%,transparent 28%)}
+.mp .hero .container{z-index:3}
+.mp .hero-copy{max-width:680px}
+.mp .hero h1{font-family:var(--fd);font-weight:700;font-size:clamp(46px,8.4vw,104px);line-height:.98;
+  letter-spacing:-.04em;margin:24px 0 26px}
+.mp .hero h1 .b2{color:var(--green-2)}
+.mp .hero p.sub{font-size:clamp(17px,1.9vw,21px);color:#CFE0D8;max-width:50ch;margin-bottom:36px;line-height:1.55}
+.mp .hero-cta{display:flex;align-items:center;gap:15px;flex-wrap:wrap}
+.mp .hero-cta .btn{padding:18px 34px;font-size:16px}
+.mp .scroll-hint{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);z-index:3;display:flex;
+  flex-direction:column;align-items:center;gap:8px;color:var(--muted-2);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+.mp .scroll-hint .mouse{width:24px;height:38px;border:2px solid rgba(255,255,255,.25);border-radius:14px;position:relative}
+.mp .scroll-hint .mouse::before{content:'';position:absolute;top:7px;left:50%;width:3px;height:7px;background:var(--green-2);
+  border-radius:2px;transform:translateX(-50%);animation:scrolly 1.8s ease-in-out infinite}
+@keyframes scrolly{0%{opacity:0;transform:translate(-50%,0)}40%{opacity:1}100%{opacity:0;transform:translate(-50%,12px)}}
+
+/* ═══════════════ TRUST STRIP ═══════════════ */
+.mp .trust{position:relative;z-index:3;border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2);
+  background:rgba(255,255,255,.015)}
+.mp .trust-grid{display:grid;grid-template-columns:repeat(4,1fr)}
+.mp .trust-item{display:flex;align-items:center;gap:13px;padding:26px 22px;border-left:1px solid var(--line-2)}
+.mp .trust-item:first-child{border-left:none}
+.mp .trust-item .ic{width:40px;height:40px;flex-shrink:0;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:var(--green-2)}
+.mp .trust-item .ic svg{width:20px;height:20px}
+.mp .trust-item b{display:block;font-size:14.5px;font-weight:600}
+.mp .trust-item span{font-size:12.5px;color:var(--muted)}
+
+/* ═══════════════ LA CURE ═══════════════ */
+.mp .cure .grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.mp .cure .visual{position:relative;aspect-ratio:1;border-radius:var(--r-lg);overflow:hidden;
+  background:radial-gradient(60% 60% at 50% 40%,rgba(16,185,129,.22),transparent 65%),var(--ink-2);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
+.mp .cure .visual .ring{position:absolute;border:1px solid rgba(16,185,129,.22);border-radius:50%}
+.mp .cure .visual .badge{position:relative;text-align:center;z-index:2}
+.mp .cure .visual .badge b{font-family:var(--fd);font-size:clamp(48px,7vw,88px);font-weight:700;color:var(--green-2);display:block;line-height:1}
+.mp .cure .visual .badge span{font-size:15px;color:var(--muted);letter-spacing:.04em}
+.mp .cure h2{margin:16px 0 18px}
+.mp .cure .feat{display:grid;gap:16px;margin-top:28px}
+.mp .cure .feat li{list-style:none;display:flex;gap:14px;align-items:flex-start}
+.mp .cure .feat .ck{flex-shrink:0;width:26px;height:26px;border-radius:8px;background:rgba(16,185,129,.14);
+  color:var(--green-2);display:flex;align-items:center;justify-content:center}
+.mp .cure .feat .ck svg{width:15px;height:15px}
+.mp .cure .feat b{font-size:15.5px;font-weight:600;display:block;margin-bottom:2px}
+.mp .cure .feat p{font-size:14px;color:var(--muted);margin:0;line-height:1.5}
+
+/* ═══════════════ OFFRES (3 quantités) ═══════════════ */
+.mp .offers{background:linear-gradient(180deg,var(--ink),var(--ink-2))}
+.mp .offers .sec-hd{margin:0 auto 52px;text-align:center}
+.mp .offers .sec-hd .lead{margin:14px auto 0}
+.mp .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch}
+.mp .plan{position:relative;background:var(--glass);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:32px 28px;display:flex;flex-direction:column;transition:transform var(--t),border-color var(--t),box-shadow var(--t)}
+.mp .plan:hover{transform:translateY(-5px);border-color:rgba(52,211,153,.45);box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.mp .plan.best{border-color:rgba(52,211,153,.6);background:linear-gradient(180deg,rgba(16,185,129,.08),var(--glass));box-shadow:0 20px 50px rgba(16,185,129,.12)}
+.mp .plan .tagbest{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--green-2),var(--green));
+  color:#04241A;font-size:12px;font-weight:800;letter-spacing:.04em;padding:6px 16px;border-radius:var(--r-full);white-space:nowrap}
+.mp .plan .qty{font-family:var(--fd);font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--green-2)}
+.mp .plan h3{font-family:var(--fd);font-size:24px;font-weight:700;margin:8px 0 4px}
+.mp .plan .desc{font-size:13.5px;color:var(--muted);min-height:40px}
+.mp .plan .price{display:flex;align-items:flex-end;gap:8px;margin:22px 0 6px}
+.mp .plan .price .amt{font-family:var(--fd);font-size:44px;font-weight:700;line-height:1}
+.mp .plan .price .per{font-size:13px;color:var(--muted);padding-bottom:6px}
+.mp .plan .save{font-size:13px;color:var(--amber);font-weight:600;min-height:20px}
+.mp .plan ul{list-style:none;margin:22px 0;display:grid;gap:12px}
+.mp .plan ul li{display:flex;gap:11px;font-size:14px;color:#D7E5DE}
+.mp .plan ul .ck{flex-shrink:0;color:var(--green-2)}
+.mp .plan ul .ck svg{width:17px;height:17px}
+.mp .plan .btn{margin-top:auto;width:100%}
+.mp .plan .btn-out{background:transparent;border:1px solid var(--line);color:#fff}
+.mp .plan .btn-out:hover{border-color:var(--green-2);background:var(--glass)}
+.mp .offers .reassure{text-align:center;margin-top:30px;font-size:13.5px;color:var(--muted);display:flex;gap:24px;justify-content:center;flex-wrap:wrap}
+.mp .offers .reassure span{display:inline-flex;gap:7px;align-items:center}
+
+/* ═══════════════ PARCOURS ═══════════════ */
+.mp .path .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;counter-reset:s}
+.mp .path .p{position:relative;background:var(--glass);border:1px solid var(--line);border-radius:var(--r-lg);padding:32px 28px}
+.mp .path .p::before{counter-increment:s;content:'0' counter(s);font-family:var(--fd);font-size:50px;font-weight:700;
+  color:transparent;-webkit-text-stroke:1.4px rgba(52,211,153,.45);display:block;margin-bottom:16px}
+.mp .path .p h4{font-family:var(--fd);font-size:19px;font-weight:700;margin-bottom:8px}
+.mp .path .p p{font-size:14px;color:var(--muted);line-height:1.6}
+.mp .path .p.cta-mid{background:linear-gradient(135deg,rgba(16,185,129,.14),var(--glass));border-color:rgba(52,211,153,.4)}
+
+/* ═══════════════ RÉSULTATS / TÉMOIGNAGES ═══════════════ */
+.mp .testi .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.mp .testi .t{background:var(--glass);border:1px solid var(--line);border-radius:var(--r-lg);padding:28px}
+.mp .testi .stars{color:var(--amber);letter-spacing:2px;margin-bottom:14px}
+.mp .testi .t p{font-size:14.5px;color:#D7E5DE;line-height:1.65}
+.mp .testi .who{display:flex;align-items:center;gap:12px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line-2)}
+.mp .testi .av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--green-2),var(--green-deep));flex-shrink:0}
+.mp .testi .who b{font-size:14px;display:block}
+.mp .testi .who span{font-size:12px;color:var(--muted)}
+
+/* ═══════════════ FAQ ═══════════════ */
+.mp .faq .grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:50px;align-items:start}
+.mp .acc{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--glass)}
+.mp .acc .item{border-top:1px solid var(--line-2)}
+.mp .acc .item:first-child{border-top:none}
+.mp .acc .q{width:100%;text-align:left;background:none;border:none;color:#fff;font-family:var(--fb);font-size:16px;
+  font-weight:600;padding:20px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:18px}
+.mp .acc .q .ic{flex-shrink:0;width:22px;height:22px;position:relative}
+.mp .acc .q .ic::before,.mp .acc .q .ic::after{content:'';position:absolute;background:var(--green-2);border-radius:2px;
+  top:50%;left:50%;transform:translate(-50%,-50%)}
+.mp .acc .q .ic::before{width:13px;height:2px}
+.mp .acc .q .ic::after{width:2px;height:13px;transition:transform var(--t)}
+.mp .acc .item.open .q .ic::after{transform:translate(-50%,-50%) scaleY(0)}
+.mp .acc .a{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.mp .acc .a p{padding:0 22px 22px;color:var(--muted);font-size:14.5px;line-height:1.65}
+
+/* ═══════════════ CTA FINAL ═══════════════ */
+.mp .final .box{position:relative;overflow:hidden;border-radius:var(--r-lg);text-align:center;
+  padding:clamp(44px,6vw,76px);border:1px solid rgba(52,211,153,.3);
+  background:radial-gradient(80% 130% at 50% 0%,rgba(16,185,129,.18),transparent 60%),var(--ink-2)}
+.mp .final h2{margin:16px auto 16px;max-width:20ch}
+.mp .final p{color:var(--muted);max-width:50ch;margin:0 auto 32px;font-size:16px}
+.mp .final .hero-cta{justify-content:center}
+
+/* ═══════════════ FOOTER ═══════════════ */
+.mp footer.site{position:relative;z-index:2;border-top:1px solid var(--line);background:var(--ink-2);padding:60px 0 28px}
+.mp .foot-top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:34px;margin-bottom:44px}
+.mp .foot-brand .brand{color:#fff;margin-bottom:16px}
+.mp .foot-brand p{font-size:13.5px;color:var(--muted);max-width:34ch;line-height:1.65}
+.mp .foot-col h5{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);margin-bottom:18px}
+.mp .foot-col a{display:block;font-size:14px;color:var(--muted);padding:6px 0;transition:color var(--t)}
+.mp .foot-col a:hover{color:var(--green-2)}
+.mp .foot-disclaimer{font-size:12px;color:var(--muted-2);line-height:1.6;padding:20px 0;border-top:1px solid var(--line-2);
+  border-bottom:1px solid var(--line-2);margin-bottom:20px}
+.mp .foot-btm{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted-2)}
+
+/* ═══════════════ REVEAL ═══════════════ */
+.mp .r{transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.mp.anim .r{opacity:0;transform:translateY(26px)}
+.mp.anim .r.in{opacity:1;transform:none}
+.mp .d1{transition-delay:.08s}.mp .d2{transition-delay:.16s}.mp .d3{transition-delay:.24s}
+
+/* ═══════════════ RESPONSIVE ═══════════════ */
+@media(max-width:1024px){
+  .mp .nav-links{display:none}
+  .mp .burger{display:flex}
+  .mp .cure .grid,.mp .faq .grid{grid-template-columns:1fr;gap:40px}
+  .mp .cure .visual{max-width:440px;margin:0 auto;order:-1}
+  .mp .trust-grid{grid-template-columns:1fr 1fr}
+  .mp .trust-item:nth-child(3){border-left:none}
+  .mp .price-grid,.mp .path .grid,.mp .testi .grid{grid-template-columns:1fr}
+  .mp .plan.best{order:-1}
+  .mp .foot-top{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  .mp .container{padding:0 20px}
+  .mp .hero{min-height:auto;padding:36px 0 64px}
+  .mp .trust-grid,.mp .foot-top{grid-template-columns:1fr}
+  .mp .trust-item{border-left:none;border-top:1px solid var(--line-2)}
+  .mp .trust-item:first-child{border-top:none}
+  .mp .hero-cta .btn{width:100%}
+  .mp .lang{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .mp .scroll-hint .mouse::before,.mp .pill svg{animation:none}
+  .mp .r,.mp.anim .r{transition:none!important;opacity:1!important;transform:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="mp">
+
+  <!-- HEADER CLAIR -->
+  <header id="hdr">
+    <div class="container">
+      <nav class="nav">
+        <a href="#" class="brand" aria-label="Mister Peptide — accueil">
+          <span class="mark">MP</span>
+          <b>MisterPeptide</b>
+        </a>
+        <div class="nav-links">
+          <a href="#" class="active">Accueil</a>
+          <a href="#parcours">Bilan gratuit</a>
+          <a href="#">Outils gratuits</a>
+          <a href="#cure">La Cure</a>
+          <a href="#">Nos distributeurs</a>
+          <a href="#">Espace Membre</a>
+          <a href="#">Pro</a>
+        </div>
+        <div class="nav-actions">
+          <span class="lang"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg> FR</span>
+          <a href="#" class="btn-login">Connexion</a>
+          <button class="burger" id="burger" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO + ADN 3D -->
+  <section class="hero">
+    <canvas id="dna" aria-hidden="true"></canvas>
+    <div class="container">
+      <div class="hero-copy">
+        <span class="pill r">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.9L21 11l-6.6 2.1L12 20l-2.4-6.9L3 11l6.6-2.1z"/></svg>
+          Conçu pour les actifs
+        </span>
+        <h1 class="r d1">Une chaîne.<br>Une cure.<br><span class="b2">Un mois.</span></h1>
+        <p class="sub r d2">Mister Peptide. La cure peptide pensée pour les actifs qui n'ont plus de temps à perdre.
+          <span class="amber">1 prise par semaine</span>. Des résultats que personne n'aura besoin de demander.</p>
+        <div class="hero-cta r d3">
+          <a href="#offres" class="btn btn-green">Découvrir la cure
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="#parcours" class="btn btn-ghost">Faire mon bilan gratuit</a>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint" aria-hidden="true"><span class="mouse"></span><span>Scroll</span></div>
+  </section>
+
+  <!-- TRUST STRIP -->
+  <div class="trust">
+    <div class="container">
+      <div class="trust-grid">
+        <div class="trust-item"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div><div><b>Pureté certifiée</b><span>Analyse HPLC documentée</span></div></div>
+        <div class="trust-item"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></div><div><b>Tests tiers</b><span>Lot par lot, indépendants</span></div></div>
+        <div class="trust-item"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg></div><div><b>1 prise / semaine</b><span>Pensé pour les actifs</span></div></div>
+        <div class="trust-item"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></svg></div><div><b>Livraison discrète</b><span>Emballage neutre</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LA CURE -->
+  <section class="sec cure" id="cure">
+    <div class="container">
+      <div class="grid">
+        <div class="visual r">
+          <span class="ring" style="inset:8%"></span><span class="ring" style="inset:22%"></span><span class="ring" style="inset:36%"></span>
+          <div class="badge"><b>1×</b><span>par semaine</span></div>
+        </div>
+        <div class="r d1">
+          <span class="eyebrow">La Cure</span>
+          <h2>Une seule cure.<br>Zéro complexité.</h2>
+          <p class="lead">Pas de routine impossible à tenir. Un peptide, une prise hebdomadaire, un protocole pensé
+            pour celles et ceux qui mènent une vie pleine. La science fait le travail — toi, tu vis.</p>
+          <!-- ⚠️ PLACEHOLDER : bénéfices à adapter, sans allégation thérapeutique non validée -->
+          <ul class="feat">
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span><div><b>Simple à tenir</b><p>Une prise par semaine, point. Pas de discipline héroïque à fournir.</p></div></li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span><div><b>Qualité vérifiée</b><p>Pureté contrôlée en laboratoire, certificat d'analyse par lot.</p></div></li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span><div><b>Discrétion totale</b><p>Emballage neutre, données chiffrées, confidentialité absolue.</p></div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OFFRES : 1 produit, 3 quantités -->
+  <section class="sec offers" id="offres">
+    <div class="container">
+      <div class="sec-hd">
+        <span class="eyebrow" style="justify-content:center">Choisis ta cure</span>
+        <h2>Un seul produit. Trois durées.</h2>
+        <p class="lead">Le même peptide, la même qualité — tu choisis simplement la quantité. Plus la cure est longue, plus le tarif baisse.</p>
+      </div>
+      <!-- ⚠️ PLACEHOLDER : confirme les 3 quantités exactes + prix réels (+ nom du peptide) -->
+      <div class="price-grid">
+        <div class="plan r">
+          <span class="qty">Découverte</span>
+          <h3>Cure 1 mois</h3>
+          <p class="desc">Pour tester le protocole et sentir les premiers effets.</p>
+          <div class="price"><span class="amt">—€</span><span class="per">/ la cure</span></div>
+          <div class="save">&nbsp;</div>
+          <ul>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>1 mois de cure (4 prises)</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Certificat d'analyse inclus</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Livraison discrète</li>
+          </ul>
+          <a href="#" class="btn btn-out">Choisir cette cure</a>
+        </div>
+
+        <div class="plan best r d1">
+          <span class="tagbest">★ Le plus choisi</span>
+          <span class="qty">Équilibre</span>
+          <h3>Cure 3 mois</h3>
+          <p class="desc">Le meilleur rapport durée / résultat. Le préféré des membres.</p>
+          <div class="price"><span class="amt">—€</span><span class="per">/ la cure</span></div>
+          <div class="save">Soit −XX % vs 1 mois</div>
+          <ul>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>3 mois de cure (12 prises)</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Bilan personnalisé offert</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Suivi prioritaire</li>
+          </ul>
+          <a href="#" class="btn btn-green">Démarrer ma cure</a>
+        </div>
+
+        <div class="plan r d2">
+          <span class="qty">Engagement</span>
+          <h3>Cure 6 mois</h3>
+          <p class="desc">Le tarif le plus avantageux, pour aller au bout du protocole.</p>
+          <div class="price"><span class="amt">—€</span><span class="per">/ la cure</span></div>
+          <div class="save">Soit −XX % vs 1 mois</div>
+          <ul>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>6 mois de cure (24 prises)</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Bilan + suivi prioritaire</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Livraison express offerte</li>
+          </ul>
+          <a href="#" class="btn btn-out">Choisir cette cure</a>
+        </div>
+      </div>
+      <div class="reassure">
+        <span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#34D399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Paiement 100 % sécurisé</span>
+        <span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#34D399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Expédition sous 24–48 h</span>
+        <span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#34D399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Discrétion garantie</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARCOURS / BILAN -->
+  <section class="sec path" id="parcours">
+    <div class="container">
+      <div class="sec-hd r"><span class="eyebrow">Ton parcours</span><h2>De ton bilan à tes résultats</h2></div>
+      <div class="grid">
+        <div class="p r"><h4>Fais ton bilan gratuit</h4><p>Quelques questions pour comprendre ton profil et vérifier que la cure te convient. Gratuit, sans engagement.</p></div>
+        <div class="p cta-mid r d1"><h4>Reçois ta cure</h4><p>Commande en 2 minutes. Expédition rapide, discrète et sous chaîne du froid jusqu'à ta porte.</p></div>
+        <div class="p r d2"><h4>Vis tes résultats</h4><p>Une prise par semaine, et tu laisses la science opérer. Des résultats qui se voient sans qu'on te demande.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TÉMOIGNAGES -->
+  <section class="sec testi">
+    <div class="container">
+      <div class="sec-hd r"><span class="eyebrow">Ils ont fait leur cure</span><h2>Ce qu'en disent les actifs</h2></div>
+      <!-- ⚠️ PLACEHOLDER : remplace par de VRAIS avis vérifiables. Jamais de faux témoignages. -->
+      <div class="grid">
+        <div class="t r"><div class="stars">★★★★★</div><p>« Une prise le dimanche soir et je n'y pense plus de la semaine. C'est exactement ce qu'il me fallait avec mon agenda. »</p><div class="who"><span class="av"></span><div><b>[ Prénom ]</b><span>Cure 3 mois · vérifié</span></div></div></div>
+        <div class="t r d1"><div class="stars">★★★★★</div><p>« Le bilan gratuit m'a rassurée avant de commencer. Sérieux, discret, et les résultats parlent d'eux-mêmes. »</p><div class="who"><span class="av"></span><div><b>[ Prénom ]</b><span>Cure 6 mois · vérifié</span></div></div></div>
+        <div class="t r d2"><div class="stars">★★★★★</div><p>« Emballage neutre, livraison rapide, qualité au rendez-vous. Je recommande à mes collègues débordés. »</p><div class="who"><span class="av"></span><div><b>[ Prénom ]</b><span>Cure 1 mois · vérifié</span></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="sec faq" id="faq">
+    <div class="container">
+      <div class="grid">
+        <div class="sec-hd r" style="margin-bottom:0"><span class="eyebrow">On répond cash</span><h2>Tes questions, nos réponses</h2><p class="lead" style="margin-top:14px">Une autre question ? Le bilan gratuit est aussi l'occasion d'échanger avec nous.</p></div>
+        <!-- ⚠️ PLACEHOLDER : réponses à adapter et faire valider juridiquement -->
+        <div class="acc r d1">
+          <div class="item open"><button class="q">Comment fonctionne la cure ?<span class="ic"></span></button><div class="a"><p>Une prise par semaine, sur la durée que tu choisis (1, 3 ou 6 mois). Le protocole est volontairement simple pour être tenu sans effort, même avec un emploi du temps chargé.</p></div></div>
+          <div class="item"><button class="q">Le bilan gratuit, c'est quoi ?<span class="ic"></span></button><div class="a"><p>Un court questionnaire qui nous permet de comprendre ton profil et de vérifier que la cure te convient. C'est gratuit, sans engagement, et ça oriente ton choix de quantité.</p></div></div>
+          <div class="item"><button class="q">Vos produits sont-ils testés ?<span class="ic"></span></button><div class="a"><p>Oui. Chaque lot dispose d'un certificat d'analyse (pureté, identité) émis par un laboratoire tiers indépendant, rattaché au numéro de lot de ton flacon. [À compléter avec ta politique officielle.]</p></div></div>
+          <div class="item"><button class="q">La livraison est-elle discrète ?<span class="ic"></span></button><div class="a"><p>Totalement. Emballage strictement neutre, aucune mention du contenu, données client chiffrées et jamais revendues.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="sec final">
+    <div class="container">
+      <div class="box r">
+        <span class="eyebrow" style="justify-content:center">Prêt à commencer ?</span>
+        <h2>Ta cure commence par un bilan. Gratuit.</h2>
+        <p>Deux minutes pour savoir si la cure est faite pour toi. Sans engagement, et toujours confidentiel.</p>
+        <div class="hero-cta">
+          <a href="#parcours" class="btn btn-green">Faire mon bilan gratuit
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="#offres" class="btn btn-ghost">Voir les cures</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site">
+    <div class="container">
+      <div class="foot-top">
+        <div class="foot-brand">
+          <a href="#" class="brand"><span class="mark">MP</span><b>MisterPeptide</b></a>
+          <p>La cure peptide pensée pour les actifs. 1 prise par semaine, des résultats discrets. Qualité vérifiée en laboratoire.</p>
+        </div>
+        <div class="foot-col"><h5>La Cure</h5><a href="#cure">Comment ça marche</a><a href="#offres">Les 3 cures</a><a href="#parcours">Bilan gratuit</a><a href="#faq">FAQ</a></div>
+        <div class="foot-col"><h5>Espace</h5><a href="#">Espace Membre</a><a href="#">Nos distributeurs</a><a href="#">Pro</a><a href="#">Outils gratuits</a></div>
+        <div class="foot-col"><h5>Légal</h5><a href="/pages/contact">Contact</a><a href="/pages/mentions-legales">Mentions légales</a><a href="/pages/cgv">CGV</a><a href="/pages/confidentialite">Confidentialité</a></div>
+      </div>
+      <!-- ⚠️ PLACEHOLDER : disclaimer à rédiger/valider par un juriste selon ton cadre réglementaire. -->
+      <p class="foot-disclaimer">Les informations présentes sur ce site sont fournies à titre informatif et ne remplacent pas un avis médical.
+        Aucune allégation thérapeutique n'est formulée. [Texte légal à finaliser avec votre conseil juridique.]</p>
+      <div class="foot-btm">
+        <span>© 2026 Mister Peptide. Tous droits réservés.</span>
+        <span>Une chaîne. Une cure. Un mois.</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<!-- ═══════════════ LIBRAIRIES (CDN, fin de body, ordre garanti) ═══════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+/* Progressive enhancement — chaque bloc isolé en try/catch. */
+(function(){
+  "use strict";
+  var root = document.querySelector('.mp');
+  var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var MOBILE = window.matchMedia && window.matchMedia('(max-width:768px)').matches;
+  function revealAll(){ root.querySelectorAll('.r').forEach(function(el){ el.classList.add('in'); }); }
+
+  /* 1) Révélations (IntersectionObserver) */
+  try{
+    if(!REDUCED && 'IntersectionObserver' in window){
+      root.classList.add('anim');
+      var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target);}});},{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+      root.querySelectorAll('.r').forEach(function(el){obs.observe(el);});
+      requestAnimationFrame(function(){root.querySelectorAll('.r').forEach(function(el){if(el.getBoundingClientRect().top<window.innerHeight*.92)el.classList.add('in');});});
+      setTimeout(revealAll,2600);
+    } else revealAll();
+  }catch(e){revealAll();}
+
+  /* 2) FAQ accordéon */
+  try{
+    root.querySelectorAll('.acc .item').forEach(function(item){
+      var a=item.querySelector('.a');
+      var setH=function(){a.style.maxHeight=item.classList.contains('open')?(a.scrollHeight+'px'):'0px';};
+      if(item.classList.contains('open'))requestAnimationFrame(setH);
+      item.querySelector('.q').addEventListener('click',function(){
+        var open=!item.classList.contains('open');
+        item.parentElement.querySelectorAll('.item.open').forEach(function(o){if(o!==item){o.classList.remove('open');o.querySelector('.a').style.maxHeight='0px';}});
+        item.classList.toggle('open',open);setH();
+      });
+      window.addEventListener('resize',setH,{passive:true});
+    });
+  }catch(e){}
+
+  /* 3) Smooth scroll + burger */
+  try{
+    root.querySelectorAll('a[href^="#"]').forEach(function(link){
+      link.addEventListener('click',function(ev){var id=link.getAttribute('href');if(id.length<2)return;var t=document.querySelector(id);if(t){ev.preventDefault();t.scrollIntoView({behavior:REDUCED?'auto':'smooth',block:'start'});}});
+    });
+    var b=document.getElementById('burger');if(b)b.addEventListener('click',function(){var t=document.getElementById('cure');if(t)t.scrollIntoView({behavior:REDUCED?'auto':'smooth'});});
+  }catch(e){}
+
+  /* 4) HÉLICE ADN RÉALISTE (Three.js) + fallback bokeh canvas 2D */
+  var canvas=document.getElementById('dna');
+  function hasWebGL(){try{var c=document.createElement('canvas');return !!(window.WebGLRenderingContext&&(c.getContext('webgl')||c.getContext('experimental-webgl')));}catch(e){return false;}}
+
+  function glowTexture(THREE){
+    var c=document.createElement('canvas');c.width=c.height=64;var g=c.getContext('2d');
+    var grd=g.createRadialGradient(32,32,0,32,32,32);
+    grd.addColorStop(0,'rgba(220,255,240,1)');grd.addColorStop(.25,'rgba(52,211,153,.85)');grd.addColorStop(1,'rgba(16,185,129,0)');
+    g.fillStyle=grd;g.beginPath();g.arc(32,32,32,0,6.2832);g.fill();
+    return new THREE.CanvasTexture(c);
+  }
+
+  function fallbackBokeh(){
+    try{
+      var ctx=canvas.getContext('2d');if(!ctx)return;var hero=canvas.parentElement,P=[],N=MOBILE?38:64;
+      function size(){var d=Math.min(window.devicePixelRatio||1,2);canvas.width=hero.offsetWidth*d;canvas.height=hero.offsetHeight*d;ctx.setTransform(d,0,0,d,0,0);}
+      size();
+      for(var i=0;i<N;i++)P.push({x:Math.random()*hero.offsetWidth,y:Math.random()*hero.offsetHeight,r:1+Math.random()*3,vx:(-.5+Math.random())*.25,vy:(-.5+Math.random())*.25,a:.2+Math.random()*.5});
+      function draw(){var w=hero.offsetWidth,h=hero.offsetHeight;ctx.clearRect(0,0,w,h);
+        for(var i=0;i<N;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;
+          var g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*4);g.addColorStop(0,'rgba(52,211,153,'+p.a+')');g.addColorStop(1,'rgba(16,185,129,0)');
+          ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,p.r*4,0,6.2832);ctx.fill();}
+        if(!REDUCED)requestAnimationFrame(draw);}
+      draw();window.addEventListener('resize',function(){size();if(REDUCED)draw();},{passive:true});
+    }catch(e){}
+  }
+
+  function cylinder(THREE,p1,p2,radius,mat){
+    var dir=new THREE.Vector3().subVectors(p2,p1),len=dir.length();
+    var geo=new THREE.CylinderGeometry(radius,radius,len,12,1,true);
+    var m=new THREE.Mesh(geo,mat);
+    m.position.copy(p1).addScaledVector(dir,.5);
+    m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.clone().normalize());
+    return m;
+  }
+
+  function initDNA(){
+    if(!window.THREE||!hasWebGL())return false;
+    try{
+      var THREE=window.THREE,hero=canvas.parentElement;
+      var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:true});
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+      renderer.outputEncoding=THREE.sRGBEncoding;
+      renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
+      var scene=new THREE.Scene();
+      scene.fog=new THREE.Fog(0x05100B,30,78);
+      var camera=new THREE.PerspectiveCamera(52,1,.1,200);camera.position.set(0,0,46);
+
+      /* lumières dramatiques (vert + blanc + accent ambre) */
+      scene.add(new THREE.AmbientLight(0x335a48,.55));
+      var key=new THREE.PointLight(0xffffff,1.15,160);key.position.set(20,24,26);scene.add(key);
+      var fillG=new THREE.PointLight(0x10B981,1.5,120);fillG.position.set(-22,-4,12);scene.add(fillG);
+      var fillA=new THREE.PointLight(0xF97316,.65,90);fillA.position.set(8,-18,16);scene.add(fillA);
+
+      var group=new THREE.Group();scene.add(group);
+      var matGreen=new THREE.MeshStandardMaterial({color:0x0E9C6E,emissive:0x10B981,emissiveIntensity:.38,metalness:.5,roughness:.28});
+      var matGreenL=new THREE.MeshStandardMaterial({color:0x34D399,emissive:0x34D399,emissiveIntensity:.55,metalness:.5,roughness:.22});
+      var matAmber=new THREE.MeshStandardMaterial({color:0xF59E0B,emissive:0xF97316,emissiveIntensity:.7,metalness:.45,roughness:.3});
+      var matBone=new THREE.MeshStandardMaterial({color:0x0E9C6E,emissive:0x0E9C6E,emissiveIntensity:.3,metalness:.6,roughness:.3});
+
+      var N=MOBILE?16:26,TURNS=2.55,R=6.2,H=34,sR=.92;
+      var sphereGeo=new THREE.SphereGeometry(sR,18,18);
+      var A=[],B=[];
+      for(var i=0;i<N;i++){var t=i/(N-1),y=-H/2+t*H,ang=t*TURNS*Math.PI*2;
+        A.push(new THREE.Vector3(Math.cos(ang)*R,y,Math.sin(ang)*R));
+        B.push(new THREE.Vector3(Math.cos(ang+Math.PI)*R,y,Math.sin(ang+Math.PI)*R));}
+      for(i=0;i<N;i++){
+        var sA=new THREE.Mesh(sphereGeo,(i%6===0)?matAmber:matGreenL);sA.position.copy(A[i]);group.add(sA);
+        var sB=new THREE.Mesh(sphereGeo,(i%6===3)?matAmber:matGreen);sB.position.copy(B[i]);group.add(sB);
+        if(i<N-1){group.add(cylinder(THREE,A[i],A[i+1],.34,matBone));group.add(cylinder(THREE,B[i],B[i+1],.34,matBone));}
+        group.add(cylinder(THREE,A[i],B[i],.2,(i%2===0)?matGreen:matAmber)); /* barreaux */
+      }
+      group.rotation.z=.16;
+
+      /* particules bokeh */
+      var pCount=MOBILE?80:150,pg=new THREE.BufferGeometry(),pos=new Float32Array(pCount*3);
+      for(i=0;i<pCount;i++){pos[i*3]=(Math.random()-.5)*70;pos[i*3+1]=(Math.random()-.5)*54;pos[i*3+2]=(Math.random()-.5)*44-6;}
+      pg.setAttribute('position',new THREE.BufferAttribute(pos,3));
+      var particles=new THREE.Points(pg,new THREE.PointsMaterial({map:glowTexture(THREE),color:0x34D399,size:1.7,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true}));
+      scene.add(particles);
+
+      function resize(){var w=hero.offsetWidth,h=hero.offsetHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.position.z=w<760?62:46;}
+      resize();window.addEventListener('resize',resize,{passive:true});
+
+      var tmx=0,tmy=0,mx=0,my=0;
+      if(!('ontouchstart'in window)){window.addEventListener('mousemove',function(e){tmx=(e.clientX/window.innerWidth-.5)*.6;tmy=(e.clientY/window.innerHeight-.5)*.45;},{passive:true});}
+
+      var visible=true;
+      if('IntersectionObserver'in window){new IntersectionObserver(function(es){visible=es[0].isIntersecting;},{threshold:.01}).observe(hero);}
+
+      /* rotation pilotée au scroll (esprit interactif) */
+      var scrollRot=0;
+      try{if(!REDUCED&&window.gsap&&window.ScrollTrigger){window.ScrollTrigger.create({trigger:hero,start:'top top',end:'bottom top',scrub:true,onUpdate:function(s){scrollRot=s.progress*Math.PI*1.1;}});}}catch(e){}
+
+      var raf,autoRot=0;
+      function tick(){
+        raf=requestAnimationFrame(tick);
+        if(!visible||document.hidden)return;
+        if(!REDUCED)autoRot+=.0032;
+        mx+=(tmx-mx)*.05;my+=(tmy-my)*.05;
+        group.rotation.y=autoRot+scrollRot;            /* spin auto + rotation pilotée au scroll */
+        group.rotation.x=-my*.6+Math.sin(Date.now()*.0004)*.04;
+        group.rotation.z=.16;                          /* inclinaison fixe */
+        group.position.x=mx*5;
+        camera.position.x=mx*3;camera.lookAt(0,0,0);
+        particles.rotation.y-=.0006;
+        renderer.render(scene,camera);
+      }
+      tick();
+      document.addEventListener('visibilitychange',function(){if(!document.hidden){cancelAnimationFrame(raf);tick();}});
+      return true;
+    }catch(e){return false;}
+  }
+
+  try{
+    if(canvas){ if(REDUCED){fallbackBokeh();} else {requestAnimationFrame(function(){if(!initDNA())fallbackBokeh();});} }
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
