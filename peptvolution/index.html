@@ -32,6 +32,7 @@
   --ink:#0C1513;--ink-2:#3B4642;--muted:#6B7873;--faint:#9AA6A0;
   --teal:#0FB5A6;--teal-2:#34D8C0;--teal-deep:#0B7C72;--teal-bg:#E6F7F3;
   --coral:#FF6A52;--coral-2:#FF8769;--coral-deep:#E64B33;--coral-bg:#FFEDE7;
+  --go:#15C25A;--go-2:#22D169;--go-deep:#0E9E45;--go-bg:#E4F8EC;
   --amber:#F5A623;
   --line:#E4E8E3;--line-2:#EDF0EC;--ink-line:rgba(255,255,255,.12);
   --dark:#06201D;--dark-2:#0A2A26;
@@ -59,9 +60,9 @@ html,body{background:#F6F7F4}
 /* ═══════════════ BOUTONS ═══════════════ */
 .pv .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:var(--fb);font-weight:700;font-size:15px;cursor:pointer;border:none;padding:16px 28px;border-radius:var(--r-full);transition:all var(--t);line-height:1;white-space:nowrap}
 .pv .btn svg{width:18px;height:18px;transition:transform var(--t)}
-.pv .btn-coral{background:var(--coral);color:#fff;box-shadow:0 12px 30px -10px rgba(255,106,82,.7)}
-.pv .btn-coral:hover{background:var(--coral-deep);transform:translateY(-3px);box-shadow:0 20px 44px -12px rgba(255,106,82,.8)}
-.pv .btn-coral:hover svg{transform:translateX(4px)}
+.pv .btn-buy{background:var(--go);color:#fff;box-shadow:0 12px 30px -10px rgba(21,194,90,.6)}
+.pv .btn-buy:hover{background:var(--go-deep);transform:translateY(-3px);box-shadow:0 20px 46px -12px rgba(21,194,90,.72)}
+.pv .btn-buy:hover svg{transform:translateX(4px)}
 .pv .btn-dark{background:var(--ink);color:#fff}
 .pv .btn-dark:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
 .pv .btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
@@ -353,7 +354,7 @@ html,body{background:#F6F7F4}
         </div>
         <div class="nav-actions">
           <a href="#bilan" class="ghost-link">Bilan gratuit</a>
-          <a href="#prix" class="btn btn-coral">Démarrer ma cure</a>
+          <a href="#prix" class="btn btn-buy">Démarrer ma cure</a>
           <button class="burger" id="burger" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         </div>
       </nav>
@@ -370,7 +371,7 @@ html,body{background:#F6F7F4}
           <h1 class="r d1">Ton corps,<br><span class="serif-i">allégé</span> par<br>la science.</h1>
           <p class="sub r d2">PEPT'VOLUTION, la cure peptide pensée pour une perte de poids <b>durable, sans privation ni effet yo-yo</b>. Une prise par semaine. Formulée et testée en laboratoire indépendant.</p>
           <div class="hero-cta r d3">
-            <a href="#prix" class="btn btn-coral btn-lg">Démarrer ma cure
+            <a href="#prix" class="btn btn-buy btn-lg">Démarrer ma cure
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
             <a href="#bilan" class="btn btn-ghost btn-lg">Faire mon bilan gratuit</a>
           </div>
@@ -580,7 +581,7 @@ html,body{background:#F6F7F4}
             <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Suivi prioritaire</li>
             <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></span>Livraison offerte</li>
           </ul>
-          <a href="#" class="btn btn-coral">Démarrer ma cure</a>
+          <a href="#" class="btn btn-buy">Démarrer ma cure</a>
           <p class="micro">Paiement unique · sans abonnement</p>
         </div>
         <!-- TIER 3 — MEILLEURE VALEUR : meilleure économie absolue + prix/kit plancher -->
@@ -631,7 +632,7 @@ html,body{background:#F6F7F4}
           <h2>Plus léger commence <span class="serif-i">maintenant.</span></h2>
           <p>Deux minutes pour savoir si la cure est faite pour toi. Gratuit, sans engagement, et toujours confidentiel.</p>
           <div class="hero-cta">
-            <a href="#" class="btn btn-coral btn-lg">Faire mon bilan gratuit
+            <a href="#" class="btn btn-buy btn-lg">Faire mon bilan gratuit
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
             <a href="#prix" class="btn btn-white btn-lg">Voir les tarifs</a>
           </div>
@@ -664,7 +665,7 @@ html,body{background:#F6F7F4}
     <div class="in">
       <div class="txt"><b>Prêt à t'alléger ?</b><small>Cure dès 149€ · jusqu'à −33% en pack · satisfait ou remboursé 60 j</small></div>
       <div style="display:flex;align-items:center;gap:8px">
-        <a href="#prix" class="btn btn-coral">Démarrer ma cure</a>
+        <a href="#prix" class="btn btn-buy">Démarrer ma cure</a>
         <button class="x" id="sctaX" aria-label="Fermer">×</button>
       </div>
     </div>
