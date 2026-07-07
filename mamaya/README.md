@@ -16,6 +16,16 @@ Piliers : **sécurité**, **confidentialité (RGPD)**, **bienveillance de la com
 | 4 | Protocoles de sécurité — [`docs/ETAPE-4-SECURITE.md`](docs/ETAPE-4-SECURITE.md) | ✅ Livré |
 | 5 | Code core — [`docs/ETAPE-5-CODE-CORE.md`](docs/ETAPE-5-CODE-CORE.md) · `backend/` · `mobile/` | ✅ Livré |
 
+## Chantier V1 (briques post-plan)
+
+| Brique | Livrable | Statut |
+|---|---|---|
+| 1 | Module auth complet — [`docs/MODULE-AUTH.md`](docs/MODULE-AUTH.md) · `backend/src/auth/` | ✅ Livré |
+| 2 | Migrations SQL — [`backend/migrations/0001_init.sql`](backend/migrations/0001_init.sql) | ✅ Livré |
+| 3 | Module feed + pipeline de modération (blocklist → IA → revue humaine) | ⏳ |
+| 4 | Gateway WebSocket chat (Socket.IO + Redis, messages chiffrés) | ⏳ |
+| 5 | CI GitHub Actions + conteneurisation | ⏳ |
+
 ## Stack proposée (résumé)
 
 - **Mobile** : React Native + Expo (TypeScript)

@@ -70,6 +70,46 @@ export class UsersService {
     });
   }
 
+  findById(id: string): Promise<User | null> {
+    return this.users.findOneBy({ id });
+  }
+
+  findByProvider(provider: AuthProvider, providerSub: string): Promise<User | null> {
+    return this.users.findOneBy({ provider, providerSub });
+  }
+
+  /** Création de compte à la première connexion OAuth (token déjà vérifié). */
+  async createFromOAuth(input: {
+    provider: AuthProvider;
+    providerSub: string;
+    email: string;
+    emailVerified: boolean;
+    displayName: string;
+    status: UserStatus;
+    dueDate: string | null;
+    cguVersion: string;
+  }): Promise<User> {
+    return this.dataSource.transaction(async (em) => {
+      const user = em.create(User, {
+        email: input.email,
+        passwordHash: null, // pas de mot de passe : OAuth uniquement
+        provider: input.provider,
+        providerSub: input.providerSub,
+        emailVerifiedAt: input.emailVerified ? new Date() : null,
+        status: input.status,
+        dueDate: input.dueDate,
+      });
+      await em.save(user);
+      await em.save(
+        em.create(UserProfile, { userId: user.id, displayName: input.displayName }),
+      );
+      await em.getRepository('consents').insert([
+        { userId: user.id, kind: 'cgu', version: input.cguVersion },
+      ]);
+      return user;
+    });
+  }
+
   /** Vérification en temps constant ; ne révèle jamais si l'email existe. */
   async verifyCredentials(email: string, password: string): Promise<User> {
     const user = await this.users
