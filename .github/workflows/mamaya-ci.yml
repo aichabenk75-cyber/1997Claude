@@ -1,0 +1,64 @@
+name: Mamaya CI
+
+on:
+  push:
+    paths:
+      - "mamaya/backend/**"
+      - ".github/workflows/mamaya-ci.yml"
+  pull_request:
+    paths:
+      - "mamaya/backend/**"
+
+defaults:
+  run:
+    working-directory: mamaya/backend
+
+jobs:
+  quality:
+    name: Typecheck, lint, tests, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mamaya/backend/package.json
+
+      - name: Installer les dépendances
+        run: npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm test -- --passWithNoTests
+
+      - name: Build
+        run: npm run build
+
+      # Scan de dépendances — bloque sur vulnérabilité critique
+      - name: Audit de sécurité
+        run: npm audit --omit=dev --audit-level=critical
+
+  migration:
+    name: Vérifier la migration SQL sur PostGIS
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgis/postgis:16-3.4-alpine
+        env:
+          POSTGRES_USER: mamaya
+          POSTGRES_PASSWORD: mamaya
+          POSTGRES_DB: mamaya
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U mamaya"
+          --health-interval 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Appliquer 0001_init.sql sur une base vierge
+        run: psql postgres://mamaya:mamaya@localhost:5432/mamaya -v ON_ERROR_STOP=1 -f migrations/0001_init.sql
