@@ -1,0 +1,45 @@
+# Environnement de développement Mamaya — `docker compose up`
+services:
+  api:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://mamaya:mamaya@db:5432/mamaya
+      REDIS_URL: redis://redis:6379
+      # Secrets de DEV uniquement — en prod : KMS + gestionnaire de secrets
+      DEV_MASTER_KEY: ${DEV_MASTER_KEY:?générer via `openssl rand -base64 32`}
+      GEO_JITTER_SECRET: ${GEO_JITTER_SECRET:?générer via `openssl rand -hex 32`}
+      JWT_KID: k1
+      JWT_PRIVATE_PEM: ${JWT_PRIVATE_PEM:?clé Ed25519 PKCS8}
+      JWT_PUBLIC_PEM: ${JWT_PUBLIC_PEM:?clé publique SPKI}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  db:
+    image: postgis/postgis:16-3.4-alpine
+    environment:
+      POSTGRES_USER: mamaya
+      POSTGRES_PASSWORD: mamaya
+      POSTGRES_DB: mamaya
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./backend/migrations/0001_init.sql:/docker-entrypoint-initdb.d/0001_init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mamaya"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  dbdata:
