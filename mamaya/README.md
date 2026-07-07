@@ -10,11 +10,11 @@ Piliers : **sécurité**, **confidentialité (RGPD)**, **bienveillance de la com
 
 | Étape | Livrable | Statut |
 |---|---|---|
-| 1 | Architecture technique & stack — [`docs/ETAPE-1-ARCHITECTURE.md`](docs/ETAPE-1-ARCHITECTURE.md) | ✅ Proposé — en attente de validation |
-| 2 | Modélisation base de données — [`docs/ETAPE-2-BASE-DE-DONNEES.md`](docs/ETAPE-2-BASE-DE-DONNEES.md) | ✅ Proposé — en attente de validation |
-| 3 | Spécification de l'API (endpoints REST + WebSocket) | ⏳ Après validation 1-2 |
-| 4 | Protocoles de sécurité (géoloc, données santé/enfants) | ⏳ Après validation 1-2 |
-| 5 | Code core (modèle Utilisateur backend, carte React Native + Mode Fantôme) | ⏳ Après validation 1-2 |
+| 1 | Architecture technique & stack — [`docs/ETAPE-1-ARCHITECTURE.md`](docs/ETAPE-1-ARCHITECTURE.md) | ✅ Validé |
+| 2 | Modélisation base de données — [`docs/ETAPE-2-BASE-DE-DONNEES.md`](docs/ETAPE-2-BASE-DE-DONNEES.md) | ✅ Validé |
+| 3 | Spécification de l'API — [`docs/ETAPE-3-API.md`](docs/ETAPE-3-API.md) | ✅ Livré |
+| 4 | Protocoles de sécurité — [`docs/ETAPE-4-SECURITE.md`](docs/ETAPE-4-SECURITE.md) | ✅ Livré |
+| 5 | Code core — [`docs/ETAPE-5-CODE-CORE.md`](docs/ETAPE-5-CODE-CORE.md) · `backend/` · `mobile/` | ✅ Livré |
 
 ## Stack proposée (résumé)
 
