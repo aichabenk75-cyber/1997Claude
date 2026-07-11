@@ -62,13 +62,23 @@ Dans le doute → "revue_humaine", jamais "rejete".`;
 @Injectable()
 export class ModerationAiService {
   private readonly logger = new Logger(ModerationAiService.name);
-  private readonly client = new Anthropic(); // ANTHROPIC_API_KEY via l'environnement
+  // Sans clé API, le constructeur Anthropic lève au démarrage → client optionnel.
+  private readonly client = process.env.ANTHROPIC_API_KEY ? new Anthropic() : null;
 
   /**
    * @param text  contenu textuel du post/commentaire
    * @param imageUrls URLs S3 présignées (courtes durées) des photos éventuelles
    */
   async classify(text: string | null, imageUrls: string[] = []): Promise<AiModerationResult> {
+    if (!this.client) {
+      // DEV sans clé : soit auto-approbation explicite (flag), soit revue humaine.
+      if (process.env.MODERATION_DEV_AUTO_APPROVE === 'true') {
+        this.logger.warn('Pas de ANTHROPIC_API_KEY — auto-approbation DEV active.');
+        return { verdict: 'approuve', categories: [], raison: 'Auto-approbation DEV (sans clé API)' };
+      }
+      return { verdict: 'revue_humaine', categories: ['autre'], raison: 'Modération IA non configurée' };
+    }
+
     const content: Anthropic.ContentBlockParam[] = [
       ...imageUrls.map((url): Anthropic.ImageBlockParam => ({
         type: 'image',

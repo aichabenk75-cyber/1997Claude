@@ -25,19 +25,40 @@ Piliers : **sécurité**, **confidentialité (RGPD)**, **bienveillance de la com
 | 3 | Module feed + pipeline de modération — [`docs/MODULES-FEED-CHAT.md`](docs/MODULES-FEED-CHAT.md) · `backend/src/feed/` · `backend/src/moderation/` | ✅ Livré |
 | 4 | Gateway WebSocket chat — `backend/src/chat/` | ✅ Livré |
 | 5 | Socle exécutable + Docker + CI — `backend/` · [`docker-compose.yml`](docker-compose.yml) | ✅ Livré |
+| 6 | App mobile Expo (auth, fil, chat, carte, profil) — `mobile/` | ✅ Livré |
 
-## Démarrage local
+## Démarrage local (backend)
 
 ```bash
 cd mamaya
-export DEV_MASTER_KEY=$(openssl rand -base64 32)
-export GEO_JITTER_SECRET=$(openssl rand -hex 32)
-# Générer la paire Ed25519 (JWT) :
-openssl genpkey -algorithm ed25519 -out /tmp/jwt.pem
-export JWT_PRIVATE_PEM=$(cat /tmp/jwt.pem)
-export JWT_PUBLIC_PEM=$(openssl pkey -in /tmp/jwt.pem -pubout)
-docker compose up   # API sur :3000, PostGIS, Redis, migration auto
+./scripts/gen-dev-env.sh   # génère .env (secrets de DEV : clés JWT, master key…)
+docker compose up --build  # API sur :3000, PostGIS, Redis, migrations auto
 ```
+
+Sans `ANTHROPIC_API_KEY`, la modération auto-approuve les contenus
+(`MODERATION_DEV_AUTO_APPROVE=true`, défaut du compose) pour que le feed vive en dev.
+
+## Tester l'app sur ton téléphone (Expo Go) 📱
+
+1. **Installe Expo Go** sur ton téléphone (App Store / Play Store).
+2. **Lance le backend** (section ci-dessus) sur ton ordinateur.
+3. **Trouve l'IP locale de ton ordinateur** (même Wi-Fi que le téléphone) :
+   - macOS : `ipconfig getifaddr en0` · Linux : `hostname -I` · Windows : `ipconfig`
+4. **Configure et démarre l'app** :
+
+   ```bash
+   cd mamaya/mobile
+   cp .env.example .env       # puis mets TON IP : EXPO_PUBLIC_API_URL=http://192.168.x.x:3000
+   npm install
+   npx expo start
+   ```
+
+5. **Scanne le QR code** affiché dans le terminal avec Expo Go (Android) ou
+   l'appareil photo (iPhone). L'app s'ouvre → crée ton compte et explore 💛
+
+> Simulateur iOS : `EXPO_PUBLIC_API_URL=http://localhost:3000` ·
+> Émulateur Android : `http://10.0.2.2:3000`.
+> Si Expo Go réclame un SDK plus récent : `npx expo install expo@latest --fix`.
 
 ## Stack proposée (résumé)
 

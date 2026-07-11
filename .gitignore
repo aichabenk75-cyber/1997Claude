@@ -3,3 +3,8 @@
 node_modules/
 *.log
 mamaya/backend/dist/
+
+# Secrets de dev et fichiers locaux Expo — jamais versionnés
+mamaya/.env
+mamaya/mobile/.env
+.expo/

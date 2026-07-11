@@ -35,11 +35,13 @@ async function bootstrap(): Promise<void> {
 
   app.enableVersioning({ type: VersioningType.URI, prefix: 'v' });
 
-  // Clés EdDSA de signature des JWT (env/KMS)
+  // Clés EdDSA de signature des JWT (env/KMS). Les fichiers .env stockent les
+  // PEM avec des `\n` littéraux (pas de multi-ligne) → on les re-normalise ici.
+  const pem = (v: string | undefined) => (v ?? '').replace(/\\n/g, '\n');
   await app.get(TokenService).init({
     kid: process.env.JWT_KID ?? 'k1',
-    privatePem: process.env.JWT_PRIVATE_PEM ?? '',
-    publicPems: { [process.env.JWT_KID ?? 'k1']: process.env.JWT_PUBLIC_PEM ?? '' },
+    privatePem: pem(process.env.JWT_PRIVATE_PEM),
+    publicPems: { [process.env.JWT_KID ?? 'k1']: pem(process.env.JWT_PUBLIC_PEM) },
   });
 
   const redisAdapter = new RedisIoAdapter(app);

@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Mamaya",
+    "slug": "mamaya",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "mamaya",
+    "splash": {
+      "backgroundColor": "#FDF2F8"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Mamaya utilise ta position de façon approximative (floutée à ~1 km côté serveur) pour te montrer les mamans autour de toi. Tu peux la couper à tout moment."
+      }
+    },
+    "android": {
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
+    },
+    "plugins": ["expo-location", "expo-secure-store"]
+  }
+}
