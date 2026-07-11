@@ -1,3 +1,6 @@
+// Doit être le tout premier import : charge le .env avant que les autres
+// modules (ex. app.module.ts, TypeOrmModule.forRoot) ne lisent process.env.
+import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { VersioningType } from '@nestjs/common';
 import helmet from 'helmet';

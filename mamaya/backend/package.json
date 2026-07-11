@@ -27,6 +27,7 @@
     "bullmq": "^5.34.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "dotenv": "^17.4.2",
     "helmet": "^8.0.0",
     "ioredis": "^5.4.0",
     "jose": "^5.9.0",
