@@ -125,20 +125,22 @@ function titleOf(c: ConversationSummary): string {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.bg },
+  container: { flex: 1, backgroundColor: COLORS.bgSoft },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: COLORS.border,
+    backgroundColor: COLORS.bg,
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
+    marginHorizontal: 12,
+    marginTop: 10,
   },
   avatar: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: COLORS.roseBg,
+    backgroundColor: COLORS.roseSoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -161,10 +163,12 @@ const styles = StyleSheet.create({
   groupRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    backgroundColor: COLORS.bg,
+    borderRadius: 16,
+    paddingHorizontal: 14,
     paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: COLORS.border,
+    marginHorizontal: 12,
+    marginTop: 10,
   },
   joinBtn: {
     backgroundColor: COLORS.rose,

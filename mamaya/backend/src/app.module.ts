@@ -10,7 +10,9 @@ import { ChatModule } from './chat/chat.module';
 import { CryptoModule } from './crypto/crypto.module';
 import { FeedModule } from './feed/feed.module';
 import { GeoModule } from './geo/geo.module';
+import { MediaModule } from './media/media.module';
 import { ModerationModule } from './moderation/moderation.module';
+import { MeModule } from './users/me.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -30,10 +32,12 @@ import { UsersModule } from './users/users.module';
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 60 }]),
     CryptoModule,
     UsersModule,
+    MeModule,
     AuthModule,
     FeedModule,
     GeoModule,
     ChatModule,
+    MediaModule,
     ModerationModule,
   ],
   providers: [

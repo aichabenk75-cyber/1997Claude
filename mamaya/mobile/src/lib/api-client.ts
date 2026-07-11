@@ -8,6 +8,9 @@ import * as SecureStore from 'expo-secure-store';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
 
+/** Base publique de l'API — sert à construire les URLs d'images (<Image source>). */
+export const API_BASE_URL = BASE_URL;
+
 const ACCESS_KEY = 'mamaya.accessToken';
 const REFRESH_KEY = 'mamaya.refreshToken';
 

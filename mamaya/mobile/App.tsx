@@ -4,7 +4,8 @@
  * Fil, Messages, Autour de moi, Profil.
  */
 import React, { useState } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -59,7 +60,7 @@ function Root() {
         <Stack.Screen
           name="Compose"
           component={ComposeRoute}
-          options={{ presentation: 'modal', title: 'Nouveau post' }}
+          options={{ presentation: 'modal', headerShown: false }}
         />
         <Stack.Screen
           name="Conversation"
@@ -86,35 +87,38 @@ function Tabs() {
     <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: COLORS.rose,
-        tabBarInactiveTintColor: COLORS.gray,
+        tabBarInactiveTintColor: COLORS.grayLight,
+        tabBarLabelStyle: { fontWeight: '700', fontSize: 11 },
       }}
     >
       <Tab.Screen
         name="Fil"
         component={FeedRoute}
-        options={{ title: 'Fil', tabBarIcon: tabEmoji('🏡') }}
+        options={{ headerShown: false, tabBarIcon: tabIcon('home') }}
       />
       <Tab.Screen
         name="Messages"
         component={MessagesRoute}
-        options={{ tabBarIcon: tabEmoji('💬') }}
+        options={{ tabBarIcon: tabIcon('chatbubbles') }}
       />
       <Tab.Screen
         name="Autour de moi"
         component={NearbyMapScreen}
-        options={{ tabBarIcon: tabEmoji('🗺️') }}
+        options={{ tabBarIcon: tabIcon('location') }}
       />
       <Tab.Screen
         name="Profil"
         component={ProfileScreen}
-        options={{ headerShown: false, tabBarIcon: tabEmoji('🌸') }}
+        options={{ headerShown: false, tabBarIcon: tabIcon('heart') }}
       />
     </Tab.Navigator>
   );
 }
 
-function tabEmoji(emoji: string) {
-  return () => <Text style={{ fontSize: 18 }}>{emoji}</Text>;
+function tabIcon(name: keyof typeof Ionicons.glyphMap) {
+  return ({ color, focused }: { color: string; focused: boolean }) => (
+    <Ionicons name={focused ? name : (`${name}-outline` as typeof name)} size={22} color={color} />
+  );
 }
 
 // ---- Ponts navigation → écrans (les écrans ignorent react-navigation) ------

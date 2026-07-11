@@ -1,7 +1,7 @@
 /**
  * Client API du module « Mamans autour de moi ».
- * `apiFetch` : wrapper fetch de l'app (base URL, JWT via expo-secure-store,
- * refresh automatique, certificate pinning configuré au niveau natif).
+ * Le serveur EXIGE un consentement RGPD 'geoloc' actif avant d'accepter la
+ * position (403 geo/consent_required sinon) — d'où grantConsent/revokeConsent.
  */
 import { apiFetch } from '../../lib/api-client';
 
@@ -19,18 +19,33 @@ export interface NearbyFilters {
   interests?: string[];   // slugs
 }
 
+const GEO_CONSENT_VERSION = '2026-01';
+
 export const nearbyApi = {
+  /** Consentement RGPD explicite, tracé en base — préalable à tout envoi de position. */
+  grantConsent() {
+    return apiFetch<void>('/v1/me/consents', {
+      method: 'POST',
+      body: { kind: 'geoloc', version: GEO_CONSENT_VERSION },
+    });
+  },
+
+  /** Révocation : le serveur efface aussi la position immédiatement. */
+  revokeConsent() {
+    return apiFetch<void>('/v1/me/consents/geoloc', { method: 'DELETE' });
+  },
+
   /** Envoie ma position — le floutage (~1 km) est fait CÔTÉ SERVEUR avant stockage. */
   updateMyLocation(lat: number, lng: number) {
-    return apiFetch('/v1/me/location', { method: 'PUT', body: { lat, lng } });
+    return apiFetch<void>('/v1/me/location', { method: 'PUT', body: { lat, lng } });
   },
 
   deleteMyLocation() {
-    return apiFetch('/v1/me/location', { method: 'DELETE' });
+    return apiFetch<void>('/v1/me/location', { method: 'DELETE' });
   },
 
   setGhostMode(enabled: boolean) {
-    return apiFetch('/v1/me/location/ghost-mode', { method: 'PATCH', body: { enabled } });
+    return apiFetch<void>('/v1/me/location/ghost-mode', { method: 'PATCH', body: { enabled } });
   },
 
   getNearby(filters: NearbyFilters): Promise<{ data: NearbyMom[] }> {

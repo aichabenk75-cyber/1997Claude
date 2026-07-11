@@ -3,6 +3,7 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { VersioningType } from '@nestjs/common';
+import { json } from 'express';
 import helmet from 'helmet';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { IoAdapter } from '@nestjs/platform-socket.io';
@@ -31,6 +32,9 @@ class RedisIoAdapter extends IoAdapter {
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+
+  // Upload de photos en JSON base64 → limite par défaut (100 ko) insuffisante.
+  app.use(json({ limit: '10mb' }));
 
   // En-têtes durcis (Étape 4) — l'API ne sert pas de HTML, CSP minimale
   app.use(helmet());

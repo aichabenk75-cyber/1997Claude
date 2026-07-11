@@ -10,6 +10,8 @@ export interface FeedItem {
   likeCount: number;
   commentCount: number;
   shareCount: number;
+  /** Clés des photos (GET /v1/media/:key) dans l'ordre d'affichage. */
+  mediaKeys: string[];
   author: { id: string; displayName: string; avatarUrl: string | null };
 }
 
@@ -82,13 +84,17 @@ export class FeedService {
 }
 
 // Fragments SQL partagés — l'exclusion des personnes bloquées est bilatérale.
+const MEDIA_KEYS_SQL = `
+         (SELECT coalesce(json_agg(pm.s3_key ORDER BY pm.position), '[]'::json)
+          FROM post_media pm WHERE pm.post_id = p.id) AS "mediaKeys"`;
+
 const FEED_SELECT = `
   SELECT p.id, p.type, p.body, p.category_id AS "categoryId",
          p.created_at AS "createdAt",
          p.like_count AS "likeCount", p.comment_count AS "commentCount",
          p.share_count AS "shareCount",
          json_build_object('id', u.id, 'displayName', pr.display_name,
-                           'avatarUrl', pr.avatar_url) AS author
+                           'avatarUrl', pr.avatar_url) AS author,${MEDIA_KEYS_SQL}
   FROM posts p
   JOIN users u ON u.id = p.author_id AND u.deleted_at IS NULL
   JOIN user_profiles pr ON pr.user_id = u.id`;
@@ -99,7 +105,7 @@ const ALGO_FEED_SELECT = `
          p.like_count AS "likeCount", p.comment_count AS "commentCount",
          p.share_count AS "shareCount",
          json_build_object('id', u.id, 'displayName', pr.display_name,
-                           'avatarUrl', pr.avatar_url) AS author,
+                           'avatarUrl', pr.avatar_url) AS author,${MEDIA_KEYS_SQL},
          (1 + p.like_count + 2 * p.comment_count + 3 * p.share_count)
          / power(extract(epoch FROM now() - p.created_at) / 3600 + 2, 1.4) AS score
   FROM posts p

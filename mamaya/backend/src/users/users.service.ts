@@ -75,6 +75,51 @@ export class UsersService {
     return this.users.findOneBy({ id });
   }
 
+  /** Profil affichable par l'app (écran Profil, en-tête du fil). */
+  async getProfile(userId: string): Promise<{
+    id: string;
+    email: string;
+    status: string;
+    displayName: string;
+    avatarUrl: string | null;
+    cityLabel: string | null;
+  } | null> {
+    const [row] = await this.dataSource.query(
+      `SELECT u.id, u.email, u.status,
+              p.display_name AS "displayName",
+              p.avatar_url   AS "avatarUrl",
+              p.city_label   AS "cityLabel"
+       FROM users u
+       JOIN user_profiles p ON p.user_id = u.id
+       WHERE u.id = $1 AND u.deleted_at IS NULL`,
+      [userId],
+    );
+    return row ?? null;
+  }
+
+  /** Accord d'un consentement (idempotent : un actif du même type suffit). */
+  async grantConsent(userId: string, kind: string, version: string): Promise<void> {
+    const active = await this.dataSource.query(
+      `SELECT 1 FROM consents
+       WHERE user_id = $1 AND kind = $2 AND revoked_at IS NULL LIMIT 1`,
+      [userId, kind],
+    );
+    if (active.length > 0) return;
+    await this.dataSource.getRepository(Consent).insert({ userId, kind, version });
+  }
+
+  /** Révocation : horodatée (preuve RGPD). Géoloc → position effacée aussitôt. */
+  async revokeConsent(userId: string, kind: string): Promise<void> {
+    await this.dataSource.query(
+      `UPDATE consents SET revoked_at = now()
+       WHERE user_id = $1 AND kind = $2 AND revoked_at IS NULL`,
+      [userId, kind],
+    );
+    if (kind === 'geoloc') {
+      await this.dataSource.query(`DELETE FROM user_locations WHERE user_id = $1`, [userId]);
+    }
+  }
+
   findByProvider(provider: AuthProvider, providerSub: string): Promise<User | null> {
     return this.users.findOneBy({ provider, providerSub });
   }

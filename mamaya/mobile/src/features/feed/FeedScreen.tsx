@@ -1,18 +1,23 @@
 /**
- * Fil d'actualité 💛 — deux modes (Pour toi / Récent), pagination par curseur,
- * like optimiste avec rollback, composer accessible par le bouton flottant.
+ * Fil d'actualité 💛 — en-tête de marque, deux modes (Pour toi / Récent),
+ * cartes avec photos, like optimiste, bouton flottant pour publier.
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   FlatList,
+  Image,
   Pressable,
   RefreshControl,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from 'react-native';
-import { COLORS } from '../../lib/theme';
-import { FeedItem, FeedMode, feedApi } from './api';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS, GRADIENTS, RADIUS, SHADOW } from '../../lib/theme';
+import { Avatar } from '../../ui/components';
+import { FeedItem, FeedMode, feedApi, mediaUrl } from './api';
 
 export function FeedScreen({ onCompose }: { onCompose: () => void }) {
   const [mode, setMode] = useState<FeedMode>('algo');
@@ -57,29 +62,23 @@ export function FeedScreen({ onCompose }: { onCompose: () => void }) {
   const toggleLike = useCallback(
     async (post: FeedItem) => {
       const wasLiked = liked.has(post.id);
-      setLiked((prev) => {
-        const next = new Set(prev);
-        wasLiked ? next.delete(post.id) : next.add(post.id);
-        return next;
-      });
-      setItems((prev) =>
-        prev.map((p) =>
-          p.id === post.id ? { ...p, likeCount: p.likeCount + (wasLiked ? -1 : 1) } : p,
-        ),
-      );
-      try {
-        await (wasLiked ? feedApi.unlike(post.id) : feedApi.like(post.id));
-      } catch {
+      const apply = (l: boolean) => {
         setLiked((prev) => {
           const next = new Set(prev);
-          wasLiked ? next.add(post.id) : next.delete(post.id);
+          l ? next.add(post.id) : next.delete(post.id);
           return next;
         });
         setItems((prev) =>
           prev.map((p) =>
-            p.id === post.id ? { ...p, likeCount: p.likeCount + (wasLiked ? 1 : -1) } : p,
+            p.id === post.id ? { ...p, likeCount: p.likeCount + (l ? 1 : -1) } : p,
           ),
         );
+      };
+      apply(!wasLiked);
+      try {
+        await (wasLiked ? feedApi.unlike(post.id) : feedApi.like(post.id));
+      } catch {
+        apply(wasLiked); // rollback
       }
     },
     [liked],
@@ -87,24 +86,29 @@ export function FeedScreen({ onCompose }: { onCompose: () => void }) {
 
   return (
     <View style={styles.container}>
-      {/* Bascule Pour toi / Récent */}
-      <View style={styles.modeRow}>
-        {(
-          [
-            { value: 'algo', label: 'Pour toi ✨' },
-            { value: 'chrono', label: 'Récent 🕐' },
-          ] as const
-        ).map((m) => (
-          <Pressable
-            key={m.value}
-            onPress={() => setMode(m.value)}
-            style={[styles.modeChip, mode === m.value && styles.modeChipActive]}
-          >
-            <Text style={mode === m.value ? styles.modeTextActive : styles.modeText}>
-              {m.label}
-            </Text>
-          </Pressable>
-        ))}
+      {/* En-tête de marque */}
+      <View style={styles.header}>
+        <Text style={styles.brand}>
+          Mamaya <Text style={styles.brandHeart}>💛</Text>
+        </Text>
+        <View style={styles.modeRow}>
+          {(
+            [
+              { value: 'algo', label: 'Pour toi ✨' },
+              { value: 'chrono', label: 'Récent 🕐' },
+            ] as const
+          ).map((m) => (
+            <Pressable
+              key={m.value}
+              onPress={() => setMode(m.value)}
+              style={[styles.modeChip, mode === m.value && styles.modeChipActive]}
+            >
+              <Text style={mode === m.value ? styles.modeTextActive : styles.modeText}>
+                {m.label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
       </View>
 
       <FlatList
@@ -115,11 +119,15 @@ export function FeedScreen({ onCompose }: { onCompose: () => void }) {
         }
         onEndReached={loadMore}
         onEndReachedThreshold={0.4}
-        contentContainerStyle={items.length === 0 ? styles.emptyContainer : undefined}
+        contentContainerStyle={[
+          { paddingBottom: 96 },
+          items.length === 0 && styles.emptyContainer,
+        ]}
         ListEmptyComponent={
           refreshing ? null : (
             <View style={styles.empty}>
-              <Text style={styles.emptyTitle}>C'est calme par ici 💛</Text>
+              <Text style={styles.emptyEmoji}>🌷</Text>
+              <Text style={styles.emptyTitle}>C'est calme par ici</Text>
               <Text style={styles.emptyText}>
                 Sois la première à partager quelque chose avec les mamans !
               </Text>
@@ -127,35 +135,87 @@ export function FeedScreen({ onCompose }: { onCompose: () => void }) {
           )
         }
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <View style={styles.avatarFallback}>
-                <Text style={styles.avatarInitial}>
-                  {item.author.displayName.charAt(0).toUpperCase()}
-                </Text>
-              </View>
-              <View style={styles.headerText}>
-                <Text style={styles.authorName}>{item.author.displayName}</Text>
-                <Text style={styles.timestamp}>{formatRelative(item.createdAt)}</Text>
-              </View>
-            </View>
-            {item.body ? <Text style={styles.body}>{item.body}</Text> : null}
-            <View style={styles.actionsRow}>
-              <Pressable style={styles.action} onPress={() => toggleLike(item)}>
-                <Text style={[styles.actionText, liked.has(item.id) && styles.actionActive]}>
-                  {liked.has(item.id) ? '💛' : '🤍'} {item.likeCount}
-                </Text>
-              </Pressable>
-              <Text style={styles.actionText}>💬 {item.commentCount}</Text>
-            </View>
-          </View>
+          <PostCard item={item} liked={liked.has(item.id)} onLike={() => toggleLike(item)} />
         )}
       />
 
       {/* Bouton flottant : nouveau post */}
-      <Pressable style={styles.fab} onPress={onCompose}>
-        <Text style={styles.fabText}>＋</Text>
+      <Pressable style={styles.fabWrap} onPress={onCompose}>
+        <LinearGradient
+          colors={GRADIENTS.fab}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.fab}
+        >
+          <Ionicons name="add" size={30} color="#fff" />
+        </LinearGradient>
       </Pressable>
+    </View>
+  );
+}
+
+function PostCard({
+  item,
+  liked,
+  onLike,
+}: {
+  item: FeedItem;
+  liked: boolean;
+  onLike: () => void;
+}) {
+  const { width } = useWindowDimensions();
+  const photoWidth = width - 24 - 32; // marges carte + padding
+
+  return (
+    <View style={[styles.card, SHADOW.card]}>
+      <View style={styles.cardHeader}>
+        <Avatar name={item.author.displayName} seed={item.author.id} size={42} />
+        <View style={styles.headerText}>
+          <Text style={styles.authorName}>{item.author.displayName}</Text>
+          <Text style={styles.timestamp}>{formatRelative(item.createdAt)}</Text>
+        </View>
+      </View>
+
+      {item.body ? <Text style={styles.body}>{item.body}</Text> : null}
+
+      {/* Photos : 1 → pleine largeur ; 2+ → grille de vignettes */}
+      {item.mediaKeys.length === 1 && (
+        <Image
+          source={{ uri: mediaUrl(item.mediaKeys[0]) }}
+          style={[styles.photoSingle, { width: photoWidth, height: photoWidth * 0.75 }]}
+          resizeMode="cover"
+        />
+      )}
+      {item.mediaKeys.length > 1 && (
+        <View style={styles.photoGrid}>
+          {item.mediaKeys.map((key) => (
+            <Image
+              key={key}
+              source={{ uri: mediaUrl(key) }}
+              style={[
+                styles.photoThumb,
+                { width: (photoWidth - 8) / 2, height: (photoWidth - 8) / 2 },
+              ]}
+              resizeMode="cover"
+            />
+          ))}
+        </View>
+      )}
+
+      <View style={styles.actionsRow}>
+        <Pressable style={styles.action} onPress={onLike} hitSlop={8}>
+          <Ionicons
+            name={liked ? 'heart' : 'heart-outline'}
+            size={22}
+            color={liked ? COLORS.rose : COLORS.gray}
+          />
+          <Text style={[styles.actionText, liked && styles.actionActive]}>{item.likeCount}</Text>
+        </Pressable>
+        <View style={styles.action}>
+          <Ionicons name="chatbubble-outline" size={20} color={COLORS.gray} />
+          <Text style={styles.actionText}>{item.commentCount}</Text>
+        </View>
+      </View>
     </View>
   );
 }
@@ -171,70 +231,56 @@ function formatRelative(iso: string): string {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bgSoft },
-  modeRow: {
-    flexDirection: 'row',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+  header: {
     backgroundColor: COLORS.bg,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
+  brand: { fontSize: 24, fontWeight: '900', color: COLORS.rose, marginBottom: 10 },
+  brandHeart: { fontSize: 20 },
+  modeRow: { flexDirection: 'row', gap: 8 },
   modeChip: {
-    borderRadius: 100,
+    borderRadius: RADIUS.full,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: COLORS.bgSoft,
+    backgroundColor: COLORS.field,
   },
   modeChipActive: { backgroundColor: COLORS.rose },
   modeText: { color: COLORS.gray, fontSize: 14, fontWeight: '600' },
-  modeTextActive: { color: '#fff', fontSize: 14, fontWeight: '700' },
+  modeTextActive: { color: '#fff', fontSize: 14, fontWeight: '800' },
   card: {
     backgroundColor: COLORS.bg,
     marginHorizontal: 12,
     marginTop: 12,
-    borderRadius: 16,
+    borderRadius: RADIUS.lg,
     padding: 16,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: COLORS.border,
   },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  avatarFallback: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.roseBg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarInitial: { color: COLORS.rose, fontWeight: '800', fontSize: 17 },
   headerText: { marginLeft: 10 },
-  authorName: { fontWeight: '700', fontSize: 15, color: COLORS.ink },
+  authorName: { fontWeight: '800', fontSize: 15, color: COLORS.ink },
   timestamp: { fontSize: 12, color: COLORS.grayLight, marginTop: 1 },
   body: { fontSize: 15, lineHeight: 22, color: COLORS.ink },
-  actionsRow: { flexDirection: 'row', gap: 20, marginTop: 12 },
-  action: { flexDirection: 'row', alignItems: 'center' },
-  actionText: { fontSize: 14, color: COLORS.gray },
-  actionActive: { color: COLORS.rose, fontWeight: '700' },
+  photoSingle: { borderRadius: RADIUS.md, marginTop: 10, backgroundColor: COLORS.field },
+  photoGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 10 },
+  photoThumb: { borderRadius: RADIUS.md, backgroundColor: COLORS.field },
+  actionsRow: { flexDirection: 'row', gap: 22, marginTop: 12 },
+  action: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  actionText: { fontSize: 14, color: COLORS.gray, fontWeight: '600' },
+  actionActive: { color: COLORS.rose, fontWeight: '800' },
   emptyContainer: { flexGrow: 1, justifyContent: 'center' },
   empty: { alignItems: 'center', padding: 32 },
-  emptyTitle: { fontSize: 18, fontWeight: '700', color: COLORS.ink, marginBottom: 8 },
+  emptyEmoji: { fontSize: 44, marginBottom: 10 },
+  emptyTitle: { fontSize: 18, fontWeight: '800', color: COLORS.ink, marginBottom: 8 },
   emptyText: { fontSize: 14, color: COLORS.gray, textAlign: 'center', lineHeight: 20 },
+  fabWrap: { position: 'absolute', right: 20, bottom: 24, borderRadius: 28, ...SHADOW.fab },
   fab: {
-    position: 'absolute',
-    right: 20,
-    bottom: 24,
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: COLORS.rose,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
   },
-  fabText: { color: '#fff', fontSize: 28, lineHeight: 32 },
 });

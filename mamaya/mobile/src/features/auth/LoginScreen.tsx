@@ -1,4 +1,4 @@
-/** Connexion — gère aussi l'étape 2FA (ticket + code TOTP) si activée. */
+/** Connexion — héro dégradé + carte blanche ; gère l'étape 2FA (ticket + code). */
 import React, { useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -7,9 +7,11 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../../lib/auth-context';
-import { COLORS } from '../../lib/theme';
+import { COLORS, GRADIENTS, RADIUS, SHADOW } from '../../lib/theme';
 import { ErrorText, PrimaryButton, TextField } from '../../ui/components';
 
 export function LoginScreen({ onShowRegister }: { onShowRegister: () => void }) {
@@ -53,69 +55,103 @@ export function LoginScreen({ onShowRegister }: { onShowRegister: () => void }) 
       style={styles.flex}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-        <Text style={styles.logo}>Mamaya 💛</Text>
-        <Text style={styles.tagline}>Le réseau des mamans et futures mamans</Text>
+      <ScrollView
+        style={styles.flex}
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Héro */}
+        <LinearGradient
+          colors={GRADIENTS.hero}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.hero}
+        >
+          <Text style={styles.logoEmoji}>🤱</Text>
+          <Text style={styles.logo}>Mamaya</Text>
+          <Text style={styles.tagline}>Le réseau des mamans et futures mamans 💛</Text>
+        </LinearGradient>
 
-        <ErrorText message={error} />
+        {/* Carte */}
+        <View style={[styles.card, SHADOW.card]}>
+          <ErrorText message={error} />
 
-        {twoFaTicket ? (
-          <>
-            <Text style={styles.paragraph}>
-              Entre le code à 6 chiffres de ton application d'authentification.
-            </Text>
-            <TextField
-              label="Code de vérification"
-              value={code}
-              onChangeText={setCode}
-              keyboardType="number-pad"
-              maxLength={10}
-              autoFocus
-            />
-            <PrimaryButton label="Vérifier" onPress={handleVerify} loading={loading} />
-            <Pressable onPress={() => setTwoFaTicket(null)}>
-              <Text style={styles.link}>← Revenir à la connexion</Text>
-            </Pressable>
-          </>
-        ) : (
-          <>
-            <TextField
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              autoComplete="email"
-              keyboardType="email-address"
-              placeholder="toi@exemple.fr"
-            />
-            <TextField
-              label="Mot de passe"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              placeholder="••••••••••••"
-            />
-            <PrimaryButton
-              label="Me connecter"
-              onPress={handleLogin}
-              loading={loading}
-              disabled={!email || !password}
-            />
-            <Pressable onPress={onShowRegister}>
-              <Text style={styles.link}>Pas encore de compte ? Rejoins-nous 💛</Text>
-            </Pressable>
-          </>
-        )}
+          {twoFaTicket ? (
+            <>
+              <Text style={styles.paragraph}>
+                Entre le code à 6 chiffres de ton application d'authentification.
+              </Text>
+              <TextField
+                label="Code de vérification"
+                icon="shield-checkmark"
+                value={code}
+                onChangeText={setCode}
+                keyboardType="number-pad"
+                maxLength={10}
+                autoFocus
+              />
+              <PrimaryButton label="Vérifier" onPress={handleVerify} loading={loading} />
+              <Pressable onPress={() => setTwoFaTicket(null)}>
+                <Text style={styles.link}>← Revenir à la connexion</Text>
+              </Pressable>
+            </>
+          ) : (
+            <>
+              <TextField
+                label="Email"
+                icon="mail"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                autoComplete="email"
+                keyboardType="email-address"
+                placeholder="toi@exemple.fr"
+              />
+              <TextField
+                label="Mot de passe"
+                icon="lock-closed"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                placeholder="••••••••••••"
+              />
+              <PrimaryButton
+                label="Me connecter"
+                onPress={handleLogin}
+                loading={loading}
+                disabled={!email || !password}
+              />
+              <Pressable onPress={onShowRegister}>
+                <Text style={styles.link}>Pas encore de compte ? Rejoins-nous 💛</Text>
+              </Pressable>
+            </>
+          )}
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1, backgroundColor: COLORS.roseBg },
-  container: { flexGrow: 1, justifyContent: 'center', padding: 24 },
-  logo: { fontSize: 34, fontWeight: '800', color: COLORS.rose, textAlign: 'center' },
-  tagline: { fontSize: 15, color: COLORS.gray, textAlign: 'center', marginBottom: 28 },
+  flex: { flex: 1, backgroundColor: COLORS.bgSoft },
+  scroll: { flexGrow: 1, paddingBottom: 32 },
+  hero: {
+    paddingTop: 90,
+    paddingBottom: 64,
+    alignItems: 'center',
+    borderBottomLeftRadius: 36,
+    borderBottomRightRadius: 36,
+  },
+  logoEmoji: { fontSize: 44, marginBottom: 6 },
+  logo: { fontSize: 38, fontWeight: '900', color: '#fff', letterSpacing: 0.5 },
+  tagline: { fontSize: 14, color: 'rgba(255,255,255,0.92)', marginTop: 6 },
+  card: {
+    backgroundColor: COLORS.bg,
+    borderRadius: RADIUS.xl,
+    padding: 22,
+    marginHorizontal: 20,
+    marginTop: -34,
+  },
   paragraph: { fontSize: 15, color: COLORS.ink, marginBottom: 16, lineHeight: 22 },
-  link: { color: COLORS.rose, textAlign: 'center', marginTop: 18, fontWeight: '600' },
+  link: { color: COLORS.rose, textAlign: 'center', marginTop: 18, fontWeight: '700' },
 });
