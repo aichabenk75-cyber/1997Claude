@@ -4,6 +4,7 @@ import {
   createDecipheriv,
   randomBytes,
 } from 'node:crypto';
+import { DataSource } from 'typeorm';
 
 /**
  * Abstraction du KMS (AWS KMS, Scaleway Key Manager, Vault Transit…).
@@ -36,7 +37,10 @@ export class EnvelopeCryptoService {
   // Cache mémoire court des DEK déchiffrées — jamais Redis, jamais disque.
   private readonly dekCache = new Map<string, { key: Buffer; expiresAt: number }>();
 
-  constructor(private readonly kms: KmsClient) {}
+  constructor(
+    private readonly kms: KmsClient,
+    private readonly dataSource: DataSource,
+  ) {}
 
   async encryptForUser(
     userId: string,
@@ -88,9 +92,21 @@ export class EnvelopeCryptoService {
   /**
    * Charge l'EDK de l'utilisatrice depuis la table user_keys, ou en crée une
    * (INSERT … ON CONFLICT DO NOTHING pour rester idempotent en concurrence).
-   * Implémentation du repository omise ici — voir module `keys`.
    */
   private async loadOrCreateEdk(userId: string): Promise<Buffer> {
-    throw new Error('Brancher le repository user_keys (module keys).');
+    const [existing] = await this.dataSource.query(
+      `SELECT edk FROM user_keys WHERE user_id = $1`,
+      [userId],
+    );
+    if (existing) return existing.edk;
+
+    const { encrypted } = await this.kms.generateDataKey();
+    const [row] = await this.dataSource.query(
+      `INSERT INTO user_keys (user_id, edk) VALUES ($1, $2)
+       ON CONFLICT (user_id) DO UPDATE SET user_id = EXCLUDED.user_id
+       RETURNING edk`,
+      [userId, encrypted],
+    );
+    return row.edk;
   }
 }

@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import type { Redis } from 'ioredis';
+import { REDIS_CLIENT } from './redis.provider';
 
 /**
  * Anti-brute-force (Étape 4) — compteurs Redis, en dehors de la base :
@@ -24,7 +25,7 @@ export class LockedError extends Error {
 
 @Injectable()
 export class BruteForceService {
-  constructor(private readonly redis: Redis) {}
+  constructor(@Inject(REDIS_CLIENT) private readonly redis: Redis) {}
 
   /** À appeler AVANT toute vérification de mot de passe. Lève LockedError si bloqué. */
   async assertAllowed(ip: string, email: string): Promise<void> {

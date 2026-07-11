@@ -58,9 +58,7 @@ export class FeedService {
   private async algoFeed(userId: string, cursor?: string) {
     const c = decodeCursor(cursor);
     const rows = await this.dataSource.query(
-      `${FEED_SELECT},
-              (1 + p.like_count + 2 * p.comment_count + 3 * p.share_count)
-              / power(extract(epoch FROM now() - p.created_at) / 3600 + 2, 1.4) AS score
+      `${ALGO_FEED_SELECT}
        WHERE ${FEED_BASE_FILTER}
          AND p.created_at > now() - interval '${ALGO_WINDOW_DAYS} days'
          AND (
@@ -91,6 +89,19 @@ const FEED_SELECT = `
          p.share_count AS "shareCount",
          json_build_object('id', u.id, 'displayName', pr.display_name,
                            'avatarUrl', pr.avatar_url) AS author
+  FROM posts p
+  JOIN users u ON u.id = p.author_id AND u.deleted_at IS NULL
+  JOIN user_profiles pr ON pr.user_id = u.id`;
+
+const ALGO_FEED_SELECT = `
+  SELECT p.id, p.type, p.body, p.category_id AS "categoryId",
+         p.created_at AS "createdAt",
+         p.like_count AS "likeCount", p.comment_count AS "commentCount",
+         p.share_count AS "shareCount",
+         json_build_object('id', u.id, 'displayName', pr.display_name,
+                           'avatarUrl', pr.avatar_url) AS author,
+         (1 + p.like_count + 2 * p.comment_count + 3 * p.share_count)
+         / power(extract(epoch FROM now() - p.created_at) / 3600 + 2, 1.4) AS score
   FROM posts p
   JOIN users u ON u.id = p.author_id AND u.deleted_at IS NULL
   JOIN user_profiles pr ON pr.user_id = u.id`;

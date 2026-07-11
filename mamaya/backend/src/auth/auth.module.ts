@@ -6,8 +6,9 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { BruteForceService } from './brute-force.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { OAuthService } from './oauth.service';
+import { APPLE_BUNDLE_ID, GOOGLE_CLIENT_IDS, OAuthService } from './oauth.service';
 import { RefreshToken } from './refresh-token.entity';
+import { redisProvider } from './redis.provider';
 import { TokenService } from './token.service';
 import { TotpService } from './totp.service';
 
@@ -28,6 +29,15 @@ import { TotpService } from './totp.service';
     OAuthService,
     BruteForceService,
     JwtAuthGuard,
+    redisProvider,
+    {
+      provide: GOOGLE_CLIENT_IDS,
+      useValue: (process.env.GOOGLE_CLIENT_IDS ?? '').split(',').filter(Boolean),
+    },
+    {
+      provide: APPLE_BUNDLE_ID,
+      useValue: process.env.APPLE_BUNDLE_ID ?? '',
+    },
   ],
   exports: [TokenService, JwtAuthGuard],
 })

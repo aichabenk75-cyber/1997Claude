@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import * as argon2 from 'argon2';
 import { EnvelopeCryptoService } from '../crypto/envelope-crypto.service';
+import { Consent } from './consent.entity';
 import { RegisterDto } from './dto/register.dto';
 import { AuthProvider, User, UserStatus } from './user.entity';
 import { UserProfile } from './user-profile.entity';
@@ -64,7 +65,7 @@ export class UsersService {
       if (dto.consentHealthDataVersion) {
         consents.push({ userId: user.id, kind: 'sante', version: dto.consentHealthDataVersion });
       }
-      await em.getRepository('consents').insert(consents);
+      await em.getRepository(Consent).insert(consents);
 
       return user;
     });
@@ -103,7 +104,7 @@ export class UsersService {
       await em.save(
         em.create(UserProfile, { userId: user.id, displayName: input.displayName }),
       );
-      await em.getRepository('consents').insert([
+      await em.getRepository(Consent).insert([
         { userId: user.id, kind: 'cgu', version: input.cguVersion },
       ]);
       return user;

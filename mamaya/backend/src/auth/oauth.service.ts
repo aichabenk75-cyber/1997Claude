@@ -1,6 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { AuthProvider } from '../users/user.entity';
+
+export const GOOGLE_CLIENT_IDS = 'GOOGLE_CLIENT_IDS';
+export const APPLE_BUNDLE_ID = 'APPLE_BUNDLE_ID';
 
 export interface OAuthIdentity {
   provider: AuthProvider;
@@ -25,8 +28,8 @@ export class OAuthService {
   );
 
   constructor(
-    private readonly googleClientIds: string[], // client IDs iOS + Android
-    private readonly appleBundleId: string,
+    @Inject(GOOGLE_CLIENT_IDS) private readonly googleClientIds: string[], // client IDs iOS + Android
+    @Inject(APPLE_BUNDLE_ID) private readonly appleBundleId: string,
   ) {}
 
   async verifyGoogle(idToken: string): Promise<OAuthIdentity> {

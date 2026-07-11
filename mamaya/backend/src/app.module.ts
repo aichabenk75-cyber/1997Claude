@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { AuthModule } from './auth/auth.module';
 import { ChatModule } from './chat/chat.module';
 import { CryptoModule } from './crypto/crypto.module';
@@ -20,6 +21,7 @@ import { UsersModule } from './users/users.module';
       autoLoadEntities: true,
       // Jamais de synchronize en prod : le schéma vient des migrations SQL.
       synchronize: false,
+      namingStrategy: new SnakeNamingStrategy(),
     }),
     BullModule.forRoot({
       connection: { url: process.env.REDIS_URL },

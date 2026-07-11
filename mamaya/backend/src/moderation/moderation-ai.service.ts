@@ -92,22 +92,22 @@ export class ModerationAiService {
             cache_control: { type: 'ephemeral' },
           },
         ],
-        output_config: {
-          format: { type: 'json_schema', schema: MODERATION_SCHEMA },
-        },
+        tools: [
+          {
+            name: 'classer_contenu',
+            description: 'Classe le contenu modéré selon le schéma imposé.',
+            input_schema: MODERATION_SCHEMA as unknown as Anthropic.Tool.InputSchema,
+          },
+        ],
+        tool_choice: { type: 'tool', name: 'classer_contenu' },
         messages: [{ role: 'user', content }],
       });
 
-      // Un refus du modèle est traité comme un signal fort → revue humaine.
-      if (response.stop_reason === 'refusal') {
-        return { verdict: 'revue_humaine', categories: ['autre'], raison: 'Refus modèle' };
+      const toolBlock = response.content.find((b) => b.type === 'tool_use');
+      if (!toolBlock || toolBlock.type !== 'tool_use') {
+        throw new Error('Réponse sans appel d’outil');
       }
-
-      const textBlock = response.content.find((b) => b.type === 'text');
-      if (!textBlock || textBlock.type !== 'text') {
-        throw new Error('Réponse sans bloc texte');
-      }
-      return JSON.parse(textBlock.text) as AiModerationResult;
+      return toolBlock.input as AiModerationResult;
     } catch (err) {
       // Fail-safe : en cas d'erreur API on n'approuve JAMAIS automatiquement.
       this.logger.error(`Classification échouée: ${err}`);

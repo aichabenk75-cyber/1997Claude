@@ -1,4 +1,5 @@
 import { Global, Module } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 import { EnvelopeCryptoService, KmsClient } from './envelope-crypto.service';
 
 /**
@@ -37,7 +38,9 @@ class LocalDevKms implements KmsClient {
   providers: [
     {
       provide: EnvelopeCryptoService,
-      useFactory: () => new EnvelopeCryptoService(new LocalDevKms()),
+      useFactory: (dataSource: DataSource) =>
+        new EnvelopeCryptoService(new LocalDevKms(), dataSource),
+      inject: [DataSource],
     },
   ],
   exports: [EnvelopeCryptoService],

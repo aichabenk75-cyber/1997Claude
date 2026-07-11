@@ -1,6 +1,7 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 import {
   ConflictException,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -12,6 +13,7 @@ import { AuthProvider, User, UserStatus } from '../users/user.entity';
 import { BruteForceService, LockedError } from './brute-force.service';
 import { OAuthLoginDto } from './dto/auth.dto';
 import { OAuthService } from './oauth.service';
+import { REDIS_CLIENT } from './redis.provider';
 import { RefreshToken } from './refresh-token.entity';
 import { TokenService } from './token.service';
 import { TotpService } from './totp.service';
@@ -37,7 +39,7 @@ export class AuthService {
     private readonly totp: TotpService,
     private readonly oauth: OAuthService,
     private readonly bruteForce: BruteForceService,
-    private readonly redis: Redis,
+    @Inject(REDIS_CLIENT) private readonly redis: Redis,
   ) {}
 
   /** Connexion email + mot de passe. Peut exiger un second facteur. */
